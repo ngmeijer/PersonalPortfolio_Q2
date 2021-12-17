@@ -1,12 +1,8 @@
-import PlayerController from "./PlayerController.js";
+import Player from "./Player.js";
 
-let scene, camera, renderer, light, player;
-let playerController;
+let scene, camera, renderer, light, playerGFX;
+let player;
 
-document.addEventListener("keydown", function (event) {
-  if (event.code == "KeyA") playerController.handleMovement(-1);
-  if (event.code == "KeyD") playerController.handleMovement(1);
-});
 
 function initialize() {
   scene = new THREE.Scene();
@@ -62,18 +58,20 @@ function preparePlayer() {
   const playerGeo = new THREE.BoxGeometry(0.5, 1, 0.5);
   const playerMat = new THREE.MeshStandardMaterial();
   playerMat.color.setHex(0x2305FD);
-  player = new THREE.Mesh(playerGeo, playerMat);
+  playerGFX = new THREE.Mesh(playerGeo, playerMat);
+  playerGFX.position.setY(-3);
+  player = new Player(playerGFX, 10);
   scene.add(player);
-  player.position.setY(-3);
-  playerController = new PlayerController(player, 1);
+  scene.add(playerGFX);
+  document.addEventListener("keydown", player.handleMovement, false);
 }
 
 function cameraFollowPlayer() {
-  camera.position.x = player.position.x;
+  camera.position.x = playerGFX.position.x;
 }
 
 function update() {
-  playerController.handleMovement(1);
+
 }
 
 window.addEventListener("resize", onWindowResize, false);
