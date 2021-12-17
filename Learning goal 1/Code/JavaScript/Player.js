@@ -1,5 +1,3 @@
-import * as THREE from "https://threejs.org/build/three.module.js";
-
 const InputKeys = Object.freeze({
   Left: 65,
   Right: 68,
@@ -11,21 +9,32 @@ export default class Player extends THREE.Object3D {
   playerGFX;
   moveSpeed;
 
-  constructor(playerGFX, moveSpeed) {
+  constructor(moveSpeed) {
     super();
-    this.playerGFX = playerGFX;
     this.moveSpeed = moveSpeed;
+    this.initializeGFX();
   }
 
-  handleMovement(event) {
-    let currentKey = event.which;
+  handleMovement(event, delta) {
+    if (window.event) {
+      let currentKey = event.keyCode;
 
-    switch (currentKey) {
-      case InputKeys.Left:
-        this.playerGFX.translateX(10);
-        break;
-      case InputKeys.Right:
-        break;
+      switch (currentKey) {
+        case InputKeys.Left:
+          this.translateX(-this.moveSpeed * delta);
+          break;
+        case InputKeys.Right:
+          this.translateX(this.moveSpeed * delta);
+          break;
+      }
     }
+  }
+
+  initializeGFX() {
+    const playerGeo = new THREE.BoxGeometry(0.5, 1, 0.5);
+    const playerMat = new THREE.MeshStandardMaterial();
+    playerMat.color.setHex(0x2305fd);
+    this.playerGFX = new THREE.Mesh(playerGeo, playerMat);
+    this.add(this.playerGFX);
   }
 }

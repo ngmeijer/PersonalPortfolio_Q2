@@ -1,14 +1,16 @@
+
 import Player from "./Player.js";
 
-let scene, camera, renderer, light, playerGFX;
-let player;
+const MainScene = new THREE.Scene();
 
+let camera, renderer, light, playerGFX;
+let player;
+let clock = new THREE.Clock();
+let delta = 0;
 
 function initialize() {
-  scene = new THREE.Scene();
-
   camera = new THREE.PerspectiveCamera(
-    75,
+    30,
     window.innerWidth / window.innerHeight,
     0.1,
     1000
@@ -24,20 +26,19 @@ function initialize() {
   preparePlayer();
 
   light = new THREE.PointLight(0xffffff, 4, 100);
-  light.position.set(
-    0,2,1
-  );
-  scene.add(light);
+  light.position.set(0, 2, 1);
+  MainScene.add(light);
 
-  camera.position.z = 10;
+  camera.position.z = 17;
 }
 
 function animate() {
   requestAnimationFrame(animate);
 
+  delta = clock.getDelta();
   update();
 
-  renderer.render(scene, camera);
+  renderer.render(MainScene, camera);
 }
 
 function onWindowResize() {
@@ -48,22 +49,18 @@ function onWindowResize() {
 
 function prepareLevel() {
   const groundGeo = new THREE.BoxGeometry(20, 0.5, 4);
-  const groundMat = new THREE.MeshStandardMaterial ();
+  const groundMat = new THREE.MeshStandardMaterial();
   const ground = new THREE.Mesh(groundGeo, groundMat);
-  scene.add(ground);
+  MainScene.add(ground);
   ground.position.y = -3.5;
 }
 
 function preparePlayer() {
-  const playerGeo = new THREE.BoxGeometry(0.5, 1, 0.5);
-  const playerMat = new THREE.MeshStandardMaterial();
-  playerMat.color.setHex(0x2305FD);
-  playerGFX = new THREE.Mesh(playerGeo, playerMat);
-  playerGFX.position.setY(-3);
-  player = new Player(playerGFX, 10);
-  scene.add(player);
-  scene.add(playerGFX);
-  document.addEventListener("keydown", player.handleMovement, false);
+  player = new Player(10);
+  MainScene.add(player);
+  document.addEventListener("keydown", function(event){
+    player.handleMovement(event, delta);
+  });
 }
 
 function cameraFollowPlayer() {
@@ -71,7 +68,7 @@ function cameraFollowPlayer() {
 }
 
 function update() {
-
+  player.handleMovement();
 }
 
 window.addEventListener("resize", onWindowResize, false);
