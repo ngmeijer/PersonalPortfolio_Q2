@@ -7,27 +7,19 @@ const InputKeys = Object.freeze({
 
 export default class Player extends THREE.Object3D {
   playerGFX;
-  moveSpeed;
+  defaultMoveSpeed;
+  currentMoveSpeed;
 
-  constructor(moveSpeed) {
+  constructor(pMoveSpeed) {
     super();
-    this.moveSpeed = moveSpeed;
     this.initializeGFX();
+    this.defaultMoveSpeed = pMoveSpeed;
+    this.position.set(0,-2,0);
   }
 
-  handleMovement(event, delta) {
-    if (window.event) {
-      let currentKey = event.keyCode;
-
-      switch (currentKey) {
-        case InputKeys.Left:
-          this.translateX(-this.moveSpeed * delta);
-          break;
-        case InputKeys.Right:
-          this.translateX(this.moveSpeed * delta);
-          break;
-      }
-    }
+  update(delta){
+    console.log(this.position);
+    //this.position.x += (this.currentMoveSpeed * delta);
   }
 
   initializeGFX() {

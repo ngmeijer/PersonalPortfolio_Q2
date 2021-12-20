@@ -1,4 +1,4 @@
-
+import { OrbitControls } from 'https://cdn.skypack.dev/three@0.104.0/examples/jsm/controls/OrbitControls.js';
 import Player from "./Player.js";
 
 const MainScene = new THREE.Scene();
@@ -36,7 +36,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   delta = clock.getDelta();
-  update();
+  update(delta);
 
   renderer.render(MainScene, camera);
 }
@@ -56,10 +56,14 @@ function prepareLevel() {
 }
 
 function preparePlayer() {
-  player = new Player(10);
+  player = new Player(1);
   MainScene.add(player);
+  var playerPos = new THREE.Vector3(0,-1,0);
+  player.position.set(0,-2,0);
+  console.log(player.position);
   document.addEventListener("keydown", function(event){
-    player.handleMovement(event, delta);
+    if(event.key === "KeyA") player.moveSpeed = -0.01;
+    if(event.key === "KeyD") player.moveSpeed = 0.01;
   });
 }
 
@@ -67,8 +71,8 @@ function cameraFollowPlayer() {
   camera.position.x = playerGFX.position.x;
 }
 
-function update() {
-  player.handleMovement();
+function update(delta) {
+  player.update(delta);
 }
 
 window.addEventListener("resize", onWindowResize, false);
