@@ -56,19 +56,16 @@ function prepareLevel() {
 }
 
 function preparePlayer() {
-  player = new Player(1);
+  player = new Player(4);
   MainScene.add(player);
-  var playerPos = new THREE.Vector3(0,-1,0);
-  player.position.set(0,-2,0);
-  console.log(player.position);
   document.addEventListener("keydown", function(event){
-    if(event.key === "KeyA") player.moveSpeed = -0.01;
-    if(event.key === "KeyD") player.moveSpeed = 0.01;
+    if(event.key == "a" || event.key == "A") player.movingLeft = true;
+    if(event.key == "d" || event.key == "D") player.movingRight = true;
   });
-}
-
-function cameraFollowPlayer() {
-  camera.position.x = playerGFX.position.x;
+  document.addEventListener("keyup", function(event){
+    if(event.key == "a" || event.key == "A") player.movingLeft = false;
+    if(event.key == "d" || event.key == "D") player.movingRight = false;
+  });
 }
 
 function update(delta) {
