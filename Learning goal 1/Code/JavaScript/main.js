@@ -1,4 +1,4 @@
-import { OrbitControls } from 'https://cdn.skypack.dev/three@0.104.0/examples/jsm/controls/OrbitControls.js';
+//import { OrbitControls } from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/controls/OrbitControls.js';
 import Player from "./Player.js";
 
 const MainScene = new THREE.Scene();
@@ -17,16 +17,20 @@ function initialize() {
   );
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
-
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
 
   document.body.appendChild(renderer.domElement);
 
   prepareLevel();
   preparePlayer();
 
-  light = new THREE.PointLight(0xffffff, 4, 100);
-  light.position.set(0, 2, 1);
+  light = new THREE.PointLight(0xffffff, 3, 10);
+  light.position.set(-6, 1, 0);
+  light.castShadow = true;
+  light.shadowCameraVisible = true;
+
   MainScene.add(light);
 
   camera.position.z = 17;
@@ -48,9 +52,10 @@ function onWindowResize() {
 }
 
 function prepareLevel() {
-  const groundGeo = new THREE.BoxGeometry(20, 0.5, 4);
+  const groundGeo = new THREE.BoxGeometry(20, .5, 4);
   const groundMat = new THREE.MeshStandardMaterial();
   const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.receiveShadow = true;
   MainScene.add(ground);
   ground.position.y = -3.5;
 }
@@ -66,10 +71,15 @@ function preparePlayer() {
     if(event.key == "a" || event.key == "A") player.movingLeft = false;
     if(event.key == "d" || event.key == "D") player.movingRight = false;
   });
+
+  document.addEventListener("keydown", function(event){
+    if(event.key == "space") player.movingLeft = true;
+  });
 }
 
 function update(delta) {
   player.update(delta);
+  camera.lookAt(player.position);
 }
 
 window.addEventListener("resize", onWindowResize, false);

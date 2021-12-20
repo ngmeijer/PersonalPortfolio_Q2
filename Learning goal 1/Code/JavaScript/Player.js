@@ -17,13 +17,14 @@ export default class Player extends THREE.Object3D {
     this.initializeGFX();
     this.defaultMoveSpeed = pMoveSpeed;
     this.currentMoveSpeed = 0;
-    this.position.set(0, -2, 0);
+    this.position.set(0, -2.75, 0);
     this.movingLeft = false;
     this.movingRight = false;
   }
 
   update(delta) {
     this.handleMovement(delta);
+    this.handleJump(delta);
   }
 
   handleMovement(delta) {
@@ -41,11 +42,19 @@ export default class Player extends THREE.Object3D {
     }
   }
 
+  handleJump(delta){
+    if(this.isJumping){
+      
+    }
+  }
+
   initializeGFX() {
     const playerGeo = new THREE.BoxGeometry(0.5, 1, 0.5);
     const playerMat = new THREE.MeshStandardMaterial();
     playerMat.color.setHex(0x2305fd);
     this.playerGFX = new THREE.Mesh(playerGeo, playerMat);
+    this.playerGFX.castShadow = true;
+    this.playerGFX.receiveShadow = true;
     this.add(this.playerGFX);
   }
 }
