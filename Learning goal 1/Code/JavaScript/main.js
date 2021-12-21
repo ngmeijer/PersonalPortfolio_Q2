@@ -33,7 +33,8 @@ function initialize() {
 
   MainScene.add(light);
 
-  camera.position.z = 17;
+  camera.position.z = 15;
+  camera.position.y = 5;
 }
 
 function animate() {
@@ -52,7 +53,7 @@ function onWindowResize() {
 }
 
 function prepareLevel() {
-  const groundGeo = new THREE.BoxGeometry(20, .5, 4);
+  const groundGeo = new THREE.BoxGeometry(100, .5, 4);
   const groundMat = new THREE.MeshStandardMaterial();
   const ground = new THREE.Mesh(groundGeo, groundMat);
   ground.receiveShadow = true;
@@ -78,8 +79,13 @@ function preparePlayer() {
 }
 
 function update(delta) {
+  followPlayer();
   player.update(delta);
   camera.lookAt(player.position);
+}
+
+function followPlayer(){
+  camera.position.x = player.position.x;
 }
 
 window.addEventListener("resize", onWindowResize, false);
