@@ -1,14 +1,26 @@
-//import { OrbitControls } from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/controls/OrbitControls.js';
 import Player from "./Player.js";
 
-const MainScene = new THREE.Scene();
-
-let camera, renderer, light, playerGFX;
+let MainScene, camera, renderer, light, playerGFX;
 let player;
 let clock = new THREE.Clock();
 let delta = 0;
 
 function initialize() {
+  initThree();
+  initWorld();
+  initVisuals();
+  document.body.appendChild(renderer.domElement);
+  window.addEventListener("resize", onWindowResize, false);
+}
+
+function initVisuals(){
+  prepareLevel();
+  preparePlayer();
+}
+
+function initThree(){
+  MainScene = new THREE.Scene();
+
   camera = new THREE.PerspectiveCamera(
     30,
     window.innerWidth / window.innerHeight,
@@ -21,11 +33,6 @@ function initialize() {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
 
-  document.body.appendChild(renderer.domElement);
-
-  prepareLevel();
-  preparePlayer();
-
   light = new THREE.PointLight(0xffffff, 3, 10);
   light.position.set(-6, 1, 0);
   light.castShadow = true;
@@ -35,6 +42,17 @@ function initialize() {
 
   camera.position.z = 15;
   camera.position.y = 5;
+}
+
+function initWorld(){
+  const world = new CANNON.World();
+  world.gravity.set(0,-10,0);
+
+  const groundShape = new CANNON.Plane();
+  let groundMaterial = new CANNON.Material();
+  const groundBody = new CANNON.Body({mass:0, material:groundMaterial});
+  groundBody.addShape(groundShape);
+  world.add(groundBody);
 }
 
 function animate() {
@@ -87,8 +105,6 @@ function update(delta) {
 function followPlayer(){
   camera.position.x = player.position.x;
 }
-
-window.addEventListener("resize", onWindowResize, false);
 
 initialize();
 animate();
