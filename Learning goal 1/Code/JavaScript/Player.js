@@ -7,6 +7,7 @@ const InputKeys = Object.freeze({
 
 export default class Player extends THREE.Object3D {
   playerGFX;
+  rigidBodyPos;
   defaultMoveSpeed;
   currentMoveSpeed;
   movingLeft;
@@ -18,7 +19,7 @@ export default class Player extends THREE.Object3D {
     this.initializeGFX();
     this.defaultMoveSpeed = pMoveSpeed;
     this.currentMoveSpeed = 0;
-    this.position.set(0, -2.75, 0);
+    this.position.set(0, -1.75, 0);
     this.movingLeft = false;
     this.movingRight = false;
   }
@@ -48,10 +49,6 @@ export default class Player extends THREE.Object3D {
     if(this.isJumping){
       
     }
-  }
-
-  handleGravity(){
-
   }
 
   initializeGFX() {
