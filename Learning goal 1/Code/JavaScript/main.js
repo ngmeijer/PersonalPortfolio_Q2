@@ -199,6 +199,7 @@ scene.add(new THREE.AxesHelper(5));
 
 let obstacleMaterial, playerMaterial, groundMaterial;
 let playerInstance;
+let cubeMesh, cubeBody;
 
 const light1 = new THREE.SpotLight();
 light1.position.set(2.5, 5, 5);
@@ -240,51 +241,25 @@ physicsWorld.gravity.set(0, -9.82, 0);
 
 const normalMaterial = new THREE.MeshNormalMaterial();
 obstacleMaterial = new THREE.MeshPhongMaterial();
-obstacleMaterial.color.setHex(0x2305fd);
+obstacleMaterial.color.setHex(0xb905fd);
 
-const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-const cubeMesh = new THREE.Mesh(cubeGeometry, obstacleMaterial);
-cubeMesh.position.x = -3;
-cubeMesh.position.y = 3;
-cubeMesh.castShadow = true;
-scene.add(cubeMesh);
-const cubeShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
-const cubeBody = new CANNON.Body({ mass: 1 });
-cubeBody.addShape(cubeShape);
-cubeBody.position.x = cubeMesh.position.x;
-cubeBody.position.y = cubeMesh.position.y;
-cubeBody.position.z = cubeMesh.position.z;
-physicsWorld.addBody(cubeBody);
-
-const sphereGeometry = new THREE.SphereGeometry();
-const sphereMesh = new THREE.Mesh(sphereGeometry, normalMaterial);
-sphereMesh.position.x = -1;
-sphereMesh.position.y = 6;
-sphereMesh.castShadow = true;
-scene.add(sphereMesh);
-const sphereShape = new CANNON.Sphere(1);
-const sphereBody = new CANNON.Body({ mass: 1 });
-sphereBody.addShape(sphereShape);
-sphereBody.position.x = sphereMesh.position.x;
-sphereBody.position.y = sphereMesh.position.y;
-sphereBody.position.z = sphereMesh.position.z;
-physicsWorld.addBody(sphereBody);
-
-const planeGeometry = new THREE.PlaneGeometry(40, 10);
-const planeMesh = new THREE.Mesh(planeGeometry, groundMaterial);
-planeMesh.rotateX(-Math.PI / 2);
-planeMesh.receiveShadow = true;
-planeMesh.position.y = -7;
-scene.add(planeMesh);
-const planeShape = new CANNON.Plane();
-const planeBody = new CANNON.Body({ mass: 0 });
-planeBody.position.y = planeMesh.position.y;
-planeBody.addShape(planeShape);
-planeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-physicsWorld.addBody(planeBody);
+function createGround() {
+  const planeGeometry = new THREE.PlaneGeometry(40, 10);
+  const planeMesh = new THREE.Mesh(planeGeometry, groundMaterial);
+  planeMesh.rotateX(-Math.PI / 2);
+  planeMesh.receiveShadow = true;
+  planeMesh.position.y = -7;
+  scene.add(planeMesh);
+  const planeShape = new CANNON.Plane();
+  const planeBody = new CANNON.Body({ mass: 0 });
+  planeBody.position.y = planeMesh.position.y;
+  planeBody.addShape(planeShape);
+  planeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+  physicsWorld.addBody(planeBody);
+}
 
 function createPlayer() {
-  playerInstance = new Player(2);
+  playerInstance = new Player(2, 50);
   physicsWorld.addBody(playerInstance.playerBody);
   scene.add(playerInstance.playerMesh);
 
@@ -294,12 +269,30 @@ function createPlayer() {
   });
   document.addEventListener("keyup", function (event) {
     if (event.key == "a" || event.key == "A") playerInstance.movingLeft = false;
-    if (event.key == "d" || event.key == "D") playerInstance.movingRight = false;
+    if (event.key == "d" || event.key == "D")
+      playerInstance.movingRight = false;
   });
 
   document.addEventListener("keydown", function (event) {
-    if (event.key == "space") playerInstance.movingLeft = true;
+    if (event.key == "space") playerInstance.isJumping = true;
   });
+}
+
+function createObstacles() {
+  const cubeGeo = new THREE.BoxGeometry(2, 1, 3);
+  cubeMesh = new THREE.Mesh(cubeGeo, obstacleMaterial);
+  cubeMesh.position.x = 5;
+  cubeMesh.position.y = -6.5;
+  cubeMesh.castShadow = true;
+  scene.add(cubeMesh);
+  const cubeShape = new CANNON.Box(new CANNON.Vec3(1, 0.5, 1.5));
+  console.log(cubeGeo.scale);
+  cubeBody = new CANNON.Body({ mass: 0 });
+  cubeBody.addShape(cubeShape);
+  cubeBody.position.x = cubeMesh.position.x;
+  cubeBody.position.y = cubeMesh.position.y;
+  cubeBody.position.z = cubeMesh.position.z;
+  physicsWorld.addBody(cubeBody);
 }
 
 window.addEventListener("resize", onWindowResize, false);
@@ -317,6 +310,8 @@ initialize();
 
 function initialize() {
   createPlayer();
+  createObstacles();
+  createGround();
 }
 
 function animate() {
@@ -336,17 +331,6 @@ function animate() {
     cubeBody.quaternion.y,
     cubeBody.quaternion.z,
     cubeBody.quaternion.w
-  );
-  sphereMesh.position.set(
-    sphereBody.position.x,
-    sphereBody.position.y,
-    sphereBody.position.z
-  );
-  sphereMesh.quaternion.set(
-    sphereBody.quaternion.x,
-    sphereBody.quaternion.y,
-    sphereBody.quaternion.z,
-    sphereBody.quaternion.w
   );
 
   playerInstance.update(delta);

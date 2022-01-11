@@ -3,15 +3,17 @@ export default class Player extends THREE.Object3D {
   playerBody;
   defaultMoveSpeed;
   currentMoveSpeed;
+  jumpForce;
   movingLeft;
   movingRight;
   delta;
 
-  constructor(pMoveSpeed) {
+  constructor(pMoveSpeed, pJumpForce) {
     super();
     this.initializeGFX();
     this.defaultMoveSpeed = pMoveSpeed;
     this.currentMoveSpeed = 0;
+    this.jumpForce = pJumpForce;
     this.playerMesh.position.x = 0;
     this.playerMesh.position.y = 3;
     this.movingLeft = false;
@@ -41,7 +43,6 @@ export default class Player extends THREE.Object3D {
       this.currentMoveSpeed = this.defaultMoveSpeed;
     else this.currentMoveSpeed = 0;
 
-    console.log(this.movingRight);
     if (this.movingLeft) {
       this.movingRight = false;
       this.playerBody.position.x = this.playerBody.position.x - (this.currentMoveSpeed * this.delta);
@@ -54,7 +55,9 @@ export default class Player extends THREE.Object3D {
 
   handleJump(){
     if(this.isJumping){
-      
+      console.log("jumping")
+      this.isJumping = false;
+      this.playerBody.position.y = this.playerBody.position.y + (this.jumpForce * this.delta);
     }
   }
 
