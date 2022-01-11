@@ -1,13 +1,6 @@
-const InputKeys = Object.freeze({
-  Left: 65,
-  Right: 68,
-  Jump: 32,
-  Fall: 83,
-});
-
 export default class Player extends THREE.Object3D {
-  playerGFX;
-  rigidBodyPos;
+  playerMesh;
+  playerBody;
   defaultMoveSpeed;
   currentMoveSpeed;
   movingLeft;
@@ -19,7 +12,8 @@ export default class Player extends THREE.Object3D {
     this.initializeGFX();
     this.defaultMoveSpeed = pMoveSpeed;
     this.currentMoveSpeed = 0;
-    this.position.set(0, -1.75, 0);
+    this.playerMesh.position.x = 0;
+    this.playerMesh.position.y = 3;
     this.movingLeft = false;
     this.movingRight = false;
   }
@@ -28,6 +22,18 @@ export default class Player extends THREE.Object3D {
     this.delta = delta;
     this.handleMovement();
     this.handleJump();
+
+    this.playerMesh.position.set(
+      this.playerBody.position.x,
+      this.playerBody.position.y,
+      this.playerBody.position.z
+    );
+    this.playerMesh.quaternion.set(
+      this.playerBody.quaternion.x,
+      this.playerBody.quaternion.y,
+      this.playerBody.quaternion.z,
+      this.playerBody.quaternion.w
+    );
   }
 
   handleMovement() {
@@ -35,13 +41,14 @@ export default class Player extends THREE.Object3D {
       this.currentMoveSpeed = this.defaultMoveSpeed;
     else this.currentMoveSpeed = 0;
 
+    console.log(this.movingRight);
     if (this.movingLeft) {
       this.movingRight = false;
-      this.position.setX(this.position.x - (this.currentMoveSpeed * this.delta));
+      this.playerBody.position.x = this.playerBody.position.x - (this.currentMoveSpeed * this.delta);
     }
     if (this.movingRight) {
       this.movingLeft = false;
-      this.position.setX(this.position.x + (this.currentMoveSpeed * this.delta));
+      this.playerBody.position.x = this.playerBody.position.x + (this.currentMoveSpeed * this.delta);
     }
   }
 
@@ -52,12 +59,19 @@ export default class Player extends THREE.Object3D {
   }
 
   initializeGFX() {
-    const playerGeo = new THREE.BoxGeometry(0.5, 1, 0.5);
+    const playerGeo = new THREE.BoxGeometry(0.5, 1, 1);
     const playerMat = new THREE.MeshStandardMaterial();
     playerMat.color.setHex(0x2305fd);
-    this.playerGFX = new THREE.Mesh(playerGeo, playerMat);
-    this.playerGFX.castShadow = true;
-    this.playerGFX.receiveShadow = true;
-    this.add(this.playerGFX);
+    this.playerMesh = new THREE.Mesh(playerGeo, playerMat);
+    this.playerMesh.castShadow = true;
+    this.playerMesh.receiveShadow = true;
+    this.add(this.playerMesh);
+
+    const playerShape = new CANNON.Box(new CANNON.Vec3(0.25, 0.5, 0.5));
+    this.playerBody = new CANNON.Body({mass: 1});
+    this.playerBody.addShape(playerShape);
+    this.playerBody.position.x = this.playerMesh.position.x;
+    this.playerBody.position.y = this.playerMesh.position.y;
+    this.playerBody.position.z = this.playerMesh.position.z;  
   }
 }
