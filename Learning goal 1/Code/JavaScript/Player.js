@@ -54,9 +54,13 @@ export default class Player extends THREE.Object3D {
   }
 
   handleJump(){
+    let tempPos;
+
+    if(!this.isJumping){
+      tempPos = this.playerBody.position;
+    }
+
     if(this.isJumping){
-      console.log("jumping")
-      this.isJumping = false;
       this.playerBody.position.y = this.playerBody.position.y + (this.jumpForce * this.delta);
     }
   }
@@ -75,6 +79,7 @@ export default class Player extends THREE.Object3D {
     this.playerBody.addShape(playerShape);
     this.playerBody.position.x = this.playerMesh.position.x;
     this.playerBody.position.y = this.playerMesh.position.y;
-    this.playerBody.position.z = this.playerMesh.position.z;  
+    this.playerBody.position.z = this.playerMesh.position.z;
+    this.playerBody.restitution = 0;
   }
 }

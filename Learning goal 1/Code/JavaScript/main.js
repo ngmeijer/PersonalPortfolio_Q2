@@ -201,34 +201,20 @@ let obstacleMaterial, playerMaterial, groundMaterial;
 let playerInstance;
 let cubeMesh, cubeBody;
 
-const light1 = new THREE.SpotLight();
-light1.position.set(2.5, 5, 5);
+const light1 = new THREE.PointLight();
+light1.position.set(0, 3, 0);
 light1.angle = Math.PI / 4;
-light1.penumbra = 0.5;
+light1.intensity = 1;
 light1.castShadow = true;
-light1.shadow.mapSize.width = 1024;
-light1.shadow.mapSize.height = 1024;
-light1.shadow.camera.near = 0.5;
-light1.shadow.camera.far = 20;
 scene.add(light1);
 
-const light2 = new THREE.SpotLight();
-light2.position.set(-2.5, 5, 5);
-light2.angle = Math.PI / 4;
-light2.castShadow = true;
-light2.shadow.mapSize.width = 1024;
-light2.shadow.mapSize.height = 1024;
-light2.shadow.camera.near = 0.5;
-light2.shadow.camera.far = 20;
-scene.add(light2);
-
 const camera = new THREE.PerspectiveCamera(
-  75,
+  50,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-camera.position.set(0, 4, 10);
+camera.position.set(0, -1, 8);
 camera.setRotationFromAxisAngle(new THREE.Vector3(1, 0, 0), -0.5);
 
 const renderer = new THREE.WebGLRenderer();
@@ -242,6 +228,9 @@ physicsWorld.gravity.set(0, -9.82, 0);
 const normalMaterial = new THREE.MeshNormalMaterial();
 obstacleMaterial = new THREE.MeshPhongMaterial();
 obstacleMaterial.color.setHex(0xb905fd);
+
+groundMaterial = new THREE.MeshPhongMaterial();
+groundMaterial.color.setHex(0x003B0C);
 
 function createGround() {
   const planeGeometry = new THREE.PlaneGeometry(40, 10);
@@ -259,7 +248,7 @@ function createGround() {
 }
 
 function createPlayer() {
-  playerInstance = new Player(2, 50);
+  playerInstance = new Player(2, 3);
   physicsWorld.addBody(playerInstance.playerBody);
   scene.add(playerInstance.playerMesh);
 
@@ -274,7 +263,10 @@ function createPlayer() {
   });
 
   document.addEventListener("keydown", function (event) {
-    if (event.key == "space") playerInstance.isJumping = true;
+    if (event.key == " ") {
+      playerInstance.isJumping = true;
+      console.log("Jumping")
+    }
   });
 }
 
@@ -284,9 +276,10 @@ function createObstacles() {
   cubeMesh.position.x = 5;
   cubeMesh.position.y = -6.5;
   cubeMesh.castShadow = true;
+  cubeMesh.receiveShadow = true;
   scene.add(cubeMesh);
   const cubeShape = new CANNON.Box(new CANNON.Vec3(1, 0.5, 1.5));
-  console.log(cubeGeo.scale);
+
   cubeBody = new CANNON.Body({ mass: 0 });
   cubeBody.addShape(cubeShape);
   cubeBody.position.x = cubeMesh.position.x;
