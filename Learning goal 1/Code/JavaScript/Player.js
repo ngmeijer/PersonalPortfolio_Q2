@@ -7,18 +7,18 @@ export default class Player extends THREE.Object3D {
   movingLeft;
   movingRight;
   delta;
-  framesToJump = 60;
-  jumpDeltaPerFrame;
-  jumpDeltaLeft;
+  light;
+  lightOffset = new THREE.Vector3(1,4,-4);
 
   constructor(pMoveSpeed, pJumpForce) {
     super();
     this.initializeGFX();
+    this.initializeBody();
+    this.initializeLight();
     this.defaultMoveSpeed = pMoveSpeed;
     this.currentMoveSpeed = 0;
     this.jumpForce = pJumpForce;
     this.jumpDeltaPerFrame = this.jumpForce / this.framesToJump;
-    console.log(this.jumpDeltaPerFrame)
     this.playerMesh.position.x = 0;
     this.playerMesh.position.y = 3;
     this.movingLeft = false;
@@ -29,6 +29,9 @@ export default class Player extends THREE.Object3D {
     this.delta = delta;
     this.handleMovement();
 
+    this.playerBody.quaternion.set(
+      0,0,0,1
+    );
     this.playerMesh.position.set(
       this.playerBody.position.x,
       this.playerBody.position.y,
@@ -40,6 +43,12 @@ export default class Player extends THREE.Object3D {
       this.playerBody.quaternion.z,
       this.playerBody.quaternion.w
     );
+
+    this.light.position.set(
+      this.playerBody.position.x + this.lightOffset.x,
+      this.playerBody.position.y + this.lightOffset.y,
+      this.playerBody.position.z + this.lightOffset.z
+      );
   }
 
   handleMovement() {
@@ -60,27 +69,30 @@ export default class Player extends THREE.Object3D {
   }
 
   handleJump() {
-    this.jumpDeltaLeft = this.jumpForce;
+    if(this.playerBody.velocity.y > -0.2 && this.playerBody.velocity.y < 0.2)
+      this.playerBody.velocity.y = this.jumpForce;
+  }
 
-    this.playerBody.velocity.y = this.jumpForce;
-
-    // if (this.jumpDeltaLeft > 0) {
-    //   this.playerBody.position.y =
-    //     this.playerBody.position.y + this.jumpForce * this.delta;
-
-    //     this.jumpDeltaLeft -= this.jumpDeltaPerFrame;
-    // }
+  initializeLight(){
+    this.light = new THREE.PointLight();
+    this.light.angle = Math.PI / 4;
+    this.light.intensity = 2;
+    this.light.castShadow = true;
   }
 
   initializeGFX() {
     const playerGeo = new THREE.BoxGeometry(0.5, 1, 1);
     const playerMat = new THREE.MeshStandardMaterial();
+    playerMat.roughness = 0.5;
+    playerMat.metalness = 0.5;
     playerMat.color.setHex(0x2305fd);
     this.playerMesh = new THREE.Mesh(playerGeo, playerMat);
     this.playerMesh.castShadow = true;
     this.playerMesh.receiveShadow = true;
     this.add(this.playerMesh);
+  }
 
+  initializeBody(){
     const playerShape = new CANNON.Box(new CANNON.Vec3(0.25, 0.5, 0.5));
     this.playerBody = new CANNON.Body({ mass: 1 });
     this.playerBody.addShape(playerShape);

@@ -1,59 +1,39 @@
 import CanvasController from "./CanvasController.js";
+import Cube from "./Cube.js";
+import Plane from "./Plane.js";
 import Player from "./Player.js";
 
 const scene = new THREE.Scene();
-scene.add(new THREE.AxesHelper(5));
-
-let obstacleMaterial, playerMaterial, groundMaterial;
-let playerInstance;
-let cubeMesh, cubeBody;
-const canvasController = new CanvasController(document, window);
-let moveDirection = 0;
-
-const light1 = new THREE.PointLight();
-light1.position.set(0, 3, 0);
-light1.angle = Math.PI / 4;
-light1.intensity = 1;
-light1.castShadow = true;
-scene.add(light1);
-
-const camera = new THREE.PerspectiveCamera(
-  50,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-camera.position.set(0, -1, 8);
-camera.setRotationFromAxisAngle(new THREE.Vector3(1, 0, 0), -0.5);
-
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-document.body.appendChild(renderer.domElement);
-
 const physicsWorld = new CANNON.World();
 physicsWorld.gravity.set(0, -9.82, 0);
 
-const normalMaterial = new THREE.MeshNormalMaterial();
-obstacleMaterial = new THREE.MeshPhongMaterial();
-obstacleMaterial.color.setHex(0xb905fd);
+let playerInstance;
+const canvasController = new CanvasController(document, window);
+let moveDirection = 0;
+let camera, renderer;
 
-groundMaterial = new THREE.MeshPhongMaterial();
-groundMaterial.color.setHex(0x003b0c);
+function createRenderingComponents(){
+  camera = new THREE.PerspectiveCamera(
+    50,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+  camera.position.set(0, -1, 8);
+  camera.setRotationFromAxisAngle(new THREE.Vector3(1, 0, 0), -0.5);
+  
+  renderer = new THREE.WebGLRenderer({powerPreference: "high-performance"});
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  document.body.appendChild(renderer.domElement);
+}
 
 function createGround() {
-  const planeGeometry = new THREE.PlaneGeometry(40, 10);
-  const planeMesh = new THREE.Mesh(planeGeometry, groundMaterial);
-  planeMesh.rotateX(-Math.PI / 2);
-  planeMesh.receiveShadow = true;
-  planeMesh.position.y = -7;
-  scene.add(planeMesh);
-  const planeShape = new CANNON.Plane();
-  const planeBody = new CANNON.Body({ mass: 0 });
-  planeBody.position.y = planeMesh.position.y;
-  planeBody.addShape(planeShape);
-  planeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-  physicsWorld.addBody(planeBody);
+  let ground = new Plane(new THREE.Vector2(40, 10), new THREE.Vector3(0,0,0), 0x003b0c);
+  scene.add(ground.planeMesh);
+  physicsWorld.add(ground.planeBody);
 }
 
 function createPlayer() {
@@ -61,6 +41,7 @@ function createPlayer() {
   canvasController.foregroundSpeed = playerInstance.defaultMoveSpeed * 100;
   physicsWorld.addBody(playerInstance.playerBody);
   scene.add(playerInstance.playerMesh);
+  scene.add(playerInstance.light);
 
   document.addEventListener("keydown", function (event) {
     if (event.key == "a" || event.key == "A") {
@@ -90,22 +71,23 @@ function createPlayer() {
   });
 }
 
-function createObstacles() {
-  const cubeGeo = new THREE.BoxGeometry(2, 1, 3);
-  cubeMesh = new THREE.Mesh(cubeGeo, obstacleMaterial);
-  cubeMesh.position.x = 5;
-  cubeMesh.position.y = -6.5;
-  cubeMesh.castShadow = true;
-  cubeMesh.receiveShadow = true;
-  scene.add(cubeMesh);
-  const cubeShape = new CANNON.Box(new CANNON.Vec3(1, 0.5, 1.5));
+function createLighting(){
+  const light1 = new THREE.PointLight();
+  light1.position.set(0, 3, 0);
+  light1.angle = Math.PI / 4;
+  light1.intensity = 1;
+  light1.castShadow = true;
+  //scene.add(light1);
+}
 
-  cubeBody = new CANNON.Body({ mass: 0 });
-  cubeBody.addShape(cubeShape);
-  cubeBody.position.x = cubeMesh.position.x;
-  cubeBody.position.y = cubeMesh.position.y;
-  cubeBody.position.z = cubeMesh.position.z;
-  physicsWorld.addBody(cubeBody);
+function createObstacles() {
+  let cube1 = new Cube(new THREE.Vector3(2,1,3), new THREE.Vector3(5, -6.5, 0), 0x9D009B, true, 0);
+  scene.add(cube1.cubeMesh);
+  physicsWorld.addBody(cube1.cubeBody);
+
+  let cube2 = new Cube(new THREE.Vector3(3,2,3), new THREE.Vector3(7, -6.5, 0), 0x9D009B, true, 0);
+  scene.add(cube2.cubeMesh);
+  physicsWorld.addBody(cube2.cubeBody);
 }
 
 window.addEventListener("resize", onWindowResize, false);
@@ -119,18 +101,17 @@ function onWindowResize() {
 const clock = new THREE.Clock();
 let delta;
 
-initialize();
+let cameraOffsetX = 3.5;
+function cameraFollowPlayer() {
+  camera.position.x = playerInstance.playerBody.position.x + cameraOffsetX;
+}
 
 function initialize() {
+  createRenderingComponents();
   createPlayer();
   createObstacles();
   createGround();
-}
-
-let cameraOffsetX = 3.5;
-function cameraFollowPlayer() {
-  //camera.lookAt(playerInstance.position);
-  camera.position.x = playerInstance.playerBody.position.x + cameraOffsetX;
+  createLighting();
 }
 
 function animate() {
@@ -138,19 +119,6 @@ function animate() {
 
   delta = Math.min(clock.getDelta(), 0.1);
   physicsWorld.step(delta);
-
-  // Copy coordinates from Cannon to Three.js
-  cubeMesh.position.set(
-    cubeBody.position.x,
-    cubeBody.position.y,
-    cubeBody.position.z
-  );
-  cubeMesh.quaternion.set(
-    cubeBody.quaternion.x,
-    cubeBody.quaternion.y,
-    cubeBody.quaternion.z,
-    cubeBody.quaternion.w
-  );
 
   playerInstance.update(delta);
   canvasController.moveUI(delta, moveDirection);
@@ -162,5 +130,8 @@ function animate() {
 function render() {
   renderer.render(scene, camera);
 }
-
+initialize();
 animate();
+
+
+
