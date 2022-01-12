@@ -57,7 +57,7 @@ function createGround() {
 }
 
 function createPlayer() {
-  playerInstance = new Player(2, 3);
+  playerInstance = new Player(2, 6);
   canvasController.foregroundSpeed = playerInstance.defaultMoveSpeed * 100;
   physicsWorld.addBody(playerInstance.playerBody);
   scene.add(playerInstance.playerMesh);
@@ -85,8 +85,7 @@ function createPlayer() {
 
   document.addEventListener("keydown", function (event) {
     if (event.key == " ") {
-      playerInstance.isJumping = true;
-      console.log("Jumping");
+      playerInstance.handleJump();
     }
   });
 }
