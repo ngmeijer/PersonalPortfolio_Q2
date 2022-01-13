@@ -1,14 +1,16 @@
 export default class Player extends THREE.Object3D {
   playerMesh;
   playerBody;
+  playerPosition;
   defaultMoveSpeed;
   currentMoveSpeed;
   jumpForce;
   movingLeft;
   movingRight;
+  canMove;
   delta;
   light;
-  lightOffset = new THREE.Vector3(1,4,-4);
+  lightOffset = new THREE.Vector3(1, 5, 3);
 
   constructor(pMoveSpeed, pJumpForce) {
     super();
@@ -29,9 +31,8 @@ export default class Player extends THREE.Object3D {
     this.delta = delta;
     this.handleMovement();
 
-    this.playerBody.quaternion.set(
-      0,0,0,1
-    );
+    this.playerPosition = this.playerBody.position;
+    this.playerBody.quaternion.set(0, 0, 0, 1);
     this.playerMesh.position.set(
       this.playerBody.position.x,
       this.playerBody.position.y,
@@ -48,13 +49,18 @@ export default class Player extends THREE.Object3D {
       this.playerBody.position.x + this.lightOffset.x,
       this.playerBody.position.y + this.lightOffset.y,
       this.playerBody.position.z + this.lightOffset.z
-      );
+    );
   }
 
   handleMovement() {
+    if(this.movingLeft && this.movingRight) 
+    {
+      this.canMove = false;
+      return;
+    }
+
     if (this.movingLeft || this.movingRight)
       this.currentMoveSpeed = this.defaultMoveSpeed;
-    else this.currentMoveSpeed = 0;
 
     if (this.movingLeft) {
       this.movingRight = false;
@@ -69,13 +75,13 @@ export default class Player extends THREE.Object3D {
   }
 
   handleJump() {
-    if(this.playerBody.velocity.y > -0.2 && this.playerBody.velocity.y < 0.2)
+    if (this.playerBody.velocity.y > -0.2 && this.playerBody.velocity.y < 0.2)
       this.playerBody.velocity.y = this.jumpForce;
   }
 
-  initializeLight(){
+  initializeLight() {
     this.light = new THREE.PointLight();
-    this.light.angle = Math.PI / 4;
+    this.light.angle = 180;
     this.light.intensity = 2;
     this.light.castShadow = true;
   }
@@ -92,7 +98,7 @@ export default class Player extends THREE.Object3D {
     this.add(this.playerMesh);
   }
 
-  initializeBody(){
+  initializeBody() {
     const playerShape = new CANNON.Box(new CANNON.Vec3(0.25, 0.5, 0.5));
     this.playerBody = new CANNON.Body({ mass: 1 });
     this.playerBody.addShape(playerShape);

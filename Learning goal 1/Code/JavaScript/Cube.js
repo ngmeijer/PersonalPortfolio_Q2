@@ -44,7 +44,9 @@ export default class Cube extends THREE.Object3D {
       this.size.y,
       this.size.z
     );
-    const material = new THREE.MeshPhongMaterial();
+    const material = new THREE.MeshPhongMaterial({polygonOffset:true,
+                                                  polygonOffsetFactor: -1.0,
+                                                  polygonOffsetUnits: -4.0});
     material.color.setHex(this.colour);
     this.cubeMesh = new THREE.Mesh(cubeGeo, material);
     this.cubeMesh.position.x = this.cubePosition.x;

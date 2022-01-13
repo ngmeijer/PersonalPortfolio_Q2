@@ -40,8 +40,8 @@ export default class CanvasController {
       this.xPosHome = this.home_style.left;
     }
     
-    moveUI(progress, direction) {
-      if(direction == 0) return;
+    moveUI(progress, direction, canMove) {
+      if(direction == 0 || !canMove) return;
       if (direction == -1) {
           this.delta += this.foregroundSpeed * progress;
       } else this.delta -= this.foregroundSpeed * progress;
@@ -49,4 +49,3 @@ export default class CanvasController {
       this.home_element.style.left = `${parseInt(this.xPosHome, 10) + this.delta}px`;
     }
   }
-  
