@@ -7,7 +7,7 @@ export default class Player extends THREE.Object3D {
   jumpForce;
   movingLeft;
   movingRight;
-  canMove;
+  canMove = true;
   delta;
   light;
   lightOffset = new THREE.Vector3(1, 5, 3);
@@ -21,8 +21,6 @@ export default class Player extends THREE.Object3D {
     this.currentMoveSpeed = 0;
     this.jumpForce = pJumpForce;
     this.jumpDeltaPerFrame = this.jumpForce / this.framesToJump;
-    this.playerMesh.position.x = 0;
-    this.playerMesh.position.y = 3;
     this.movingLeft = false;
     this.movingRight = false;
   }
@@ -53,12 +51,9 @@ export default class Player extends THREE.Object3D {
   }
 
   handleMovement() {
-    if(this.movingLeft && this.movingRight) 
-    {
-      this.canMove = false;
-      return;
-    }
+    if(!this.movingLeft && !this.movingRight) this.currentMoveSpeed = 0;
 
+    
     if (this.movingLeft || this.movingRight)
       this.currentMoveSpeed = this.defaultMoveSpeed;
 
@@ -89,9 +84,7 @@ export default class Player extends THREE.Object3D {
   initializeGFX() {
     const playerGeo = new THREE.BoxGeometry(0.5, 1, 1);
     const playerMat = new THREE.MeshStandardMaterial();
-    playerMat.roughness = 0.5;
-    playerMat.metalness = 0.5;
-    playerMat.color.setHex(0x2305fd);
+    playerMat.color.setHex(0xCA0000);
     this.playerMesh = new THREE.Mesh(playerGeo, playerMat);
     this.playerMesh.castShadow = true;
     this.playerMesh.receiveShadow = true;

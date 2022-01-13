@@ -23,7 +23,6 @@ function createRenderingComponents() {
   );
 
   camera.position.set(0, -2, 8);
-  //camera.setRotationFromAxisAngle(new THREE.Vector3(1, 0, 0), -0.5);
 
   renderer = new THREE.WebGLRenderer({ powerPreference: "high-performance", logarithmicDepthBuffer:true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -37,10 +36,19 @@ function createGround() {
   let ground = new Plane(
     new THREE.Vector2(40, 10),
     new THREE.Vector3(0, 0, 0),
-    0x003b0c
+    0x212121
   );
   scene.add(ground.planeMesh);
   physicsWorld.add(ground.planeBody);
+
+  let background = new Plane(
+    new THREE.Vector2(40,10),
+    new THREE.Vector3(0,0,-5),
+    0x212121
+  );
+  background.rotateZ(1.57);
+  scene.add(background.planeMesh);
+  physicsWorld.add(background.planeBody);
 }
 
 function createPlayer() {
@@ -78,15 +86,6 @@ function createPlayer() {
   });
 }
 
-function createLighting() {
-  const light1 = new THREE.PointLight();
-  light1.position.set(0, 3, 0);
-  light1.angle = Math.PI / 4;
-  light1.intensity = 1;
-  light1.castShadow = true;
-  //scene.add(light1);
-}
-
 function createHomeArea() {
   let stairStep1 = new Cube(
     new THREE.Vector3(2, 1, 3),
@@ -107,22 +106,12 @@ function createHomeArea() {
   );
   scene.add(stairStep2.cubeMesh);
   physicsWorld.addBody(stairStep2.cubeBody);
-
-  let stairStep3 = new Cube(
-    new THREE.Vector3(2, 3, 3),
-    new THREE.Vector3(9, -5.5, 0),
-    0x202020,
-    true,
-    0
-  );
-  scene.add(stairStep3.cubeMesh);
-  physicsWorld.addBody(stairStep3.cubeBody);
 }
 
 function createPortfolioArea() {
   let ground = new Cube(
-    new THREE.Vector3(10, 3, 3),
-    new THREE.Vector3(13, -5.5, 0),
+    new THREE.Vector3(14, 3, 3),
+    new THREE.Vector3(15, -5.5, 0),
     0x202020,
     true,
     0
@@ -132,8 +121,8 @@ function createPortfolioArea() {
 
   let platform1 = new Cube(
     new THREE.Vector3(3, 0.2, 1),
-    new THREE.Vector3(15, -2.8, 0),
-    0x202020,
+    new THREE.Vector3(15.5, -2.8, 0),
+    0xCA6800,
     true,
     0
   );
@@ -143,12 +132,34 @@ function createPortfolioArea() {
   let platform2 = new Cube(
     new THREE.Vector3(3, 0.2, 1),
     new THREE.Vector3(11, -2.5, 0),
-    0x202020,
+    0xCA6800,
     true,
     0
   );
   scene.add(platform2.cubeMesh);
   physicsWorld.addBody(platform2.cubeBody);
+}
+
+function createAboutMeArea(){
+  let door = new Cube(
+    new THREE.Vector3(1, 5, 3),
+    new THREE.Vector3(20, -1.5, 0),
+    0x000E5B,
+    true,
+    0
+  );
+  scene.add(door.cubeMesh);
+  physicsWorld.addBody(door.cubeBody);
+
+  let blueCube = new Cube(
+    new THREE.Vector3(1, 1, 1),
+    new THREE.Vector3(18, -1.5, 0),
+    0x000E5B,
+    false,
+    1
+  );
+  scene.add(blueCube.cubeMesh);
+  physicsWorld.addBody(blueCube.cubeBody);
 }
 
 window.addEventListener("resize", onWindowResize, false);
@@ -159,22 +170,20 @@ function onWindowResize() {
   render();
 }
 
-
-let cameraOffsetX = 1.5;
+let cameraOffset = new THREE.Vector3(1.5, 1.5, 0);
 function cameraFollowPlayer() {
-  camera.lookAt(new THREE.Vector3(playerInstance.playerPosition.x, -4.5, 0));
-  camera.position.x = playerInstance.playerBody.position.x - cameraOffsetX;
-  camera.position.y = playerInstance.playerBody.position.y + 3;
+  camera.position.x = playerInstance.playerBody.position.x + cameraOffset.x;
+  camera.position.y = playerInstance.playerBody.position.y + cameraOffset.y;
 }
 
 function initialize() {
   createRenderingComponents();
   createGround();
-  createLighting();
   
   createPlayer();
   createHomeArea();
   createPortfolioArea();
+  createAboutMeArea();
 }
 
 const frameClock = new THREE.Clock();
