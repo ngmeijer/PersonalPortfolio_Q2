@@ -31,15 +31,11 @@ export default class Plane extends THREE.Object3D {
     let material = new THREE.MeshPhongMaterial();
     material.color.setHex(this.colour);
     this.planeMesh = new THREE.Mesh(planeGeometry, material);
-    this.planeMesh.rotateX(-Math.PI / 2);
     this.planeMesh.receiveShadow = true;
     
-    this.planeMesh.position.y = this.planePosition.y;
-    this.planeMesh.position.z = this.planePosition.z;
+    this.setPosition();
 
-    this.planeMesh.rotation.x = this.planeRotationRadians.x;
-    this.planeMesh.rotation.y = this.planeRotationRadians.y;
-    this.planeMesh.rotation.z = this.planeRotationRadians.z;
+    this.setRotation();
   }
 
   createBody() {
@@ -51,5 +47,16 @@ export default class Plane extends THREE.Object3D {
       new CANNON.Vec3(1, 0, 0),
       -Math.PI / 2
     );
+  }
+
+  setPosition(){
+    this.planeMesh.position.y = this.planePosition.y;
+    this.planeMesh.position.z = this.planePosition.z;
+  }
+
+  setRotation(){
+    this.planeMesh.rotation.x = this.planeRotationRadians.x;
+    this.planeMesh.rotation.y = this.planeRotationRadians.y;
+    this.planeMesh.rotation.z = this.planeRotationRadians.z;
   }
 }

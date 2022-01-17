@@ -24,7 +24,6 @@ export default class Cube extends THREE.Object3D {
   }
 
   updateTransform(){
-    // Copy coordinates from Cannon to Three.js
     cubeMesh.position.set(
         cubeBody.position.x,
         cubeBody.position.y,
@@ -51,6 +50,7 @@ export default class Cube extends THREE.Object3D {
     this.cubeMesh = new THREE.Mesh(cubeGeo, material);
     this.cubeMesh.position.x = this.cubePosition.x;
     this.cubeMesh.position.y = this.cubePosition.y;
+    this.cubeMesh.position.z = this.cubePosition.z;
     this.cubeMesh.castShadow = true;
     this.cubeMesh.receiveShadow = true;
   }

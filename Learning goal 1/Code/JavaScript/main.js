@@ -123,7 +123,7 @@ function createPortfolioArea() {
 
   let platform1 = new Cube(
     new THREE.Vector3(3, 0.2, 1),
-    new THREE.Vector3(15.5, -2.8, 0),
+    new THREE.Vector3(15.5, -2.8, 0.1),
     0xCA6800,
     true,
     0
@@ -133,7 +133,7 @@ function createPortfolioArea() {
 
   let platform2 = new Cube(
     new THREE.Vector3(3, 0.2, 1),
-    new THREE.Vector3(11, -2.5, 0),
+    new THREE.Vector3(11, -2.5, 0.1),
     0xCA6800,
     true,
     0
@@ -198,7 +198,7 @@ function animate() {
 
   playerInstance.update(delta);
   canvasController.moveUIHorizontally(delta, moveDirection, playerInstance.canMove);
-  canvasController.moveUIVertically(delta, playerInstance.isJumping, playerInstance.playerBody.velocity);
+  canvasController.moveUIVertically(delta, playerInstance.isJumping, playerInstance.velocity.y);
   cameraFollowPlayer();
 
   render();
