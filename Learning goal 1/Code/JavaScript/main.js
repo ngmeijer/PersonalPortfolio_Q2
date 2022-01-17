@@ -35,20 +35,22 @@ function createRenderingComponents() {
 function createGround() {
   let ground = new Plane(
     new THREE.Vector2(40, 10),
-    new THREE.Vector3(0, 0, 0),
-    0x212121
+    new THREE.Vector3(0, -7, 0),
+    new THREE.Vector3(-90,0,0),
+    0x212121,
+    true
   );
   scene.add(ground.planeMesh);
   physicsWorld.add(ground.planeBody);
 
   let background = new Plane(
-    new THREE.Vector2(40,10),
-    new THREE.Vector3(0,0,-5),
-    0x212121
+    new THREE.Vector2(40, 25),
+    new THREE.Vector3(0, -5, -5),
+    new THREE.Vector3(0,0,0),
+    0x212121,
+    false
   );
-  background.rotateZ(1.57);
   scene.add(background.planeMesh);
-  physicsWorld.add(background.planeBody);
 }
 
 function createPlayer() {
@@ -195,7 +197,8 @@ function animate() {
   physicsWorld.step(delta);
 
   playerInstance.update(delta);
-  canvasController.moveUI(delta, moveDirection, playerInstance.canMove);
+  canvasController.moveUIHorizontally(delta, moveDirection, playerInstance.canMove);
+  canvasController.moveUIVertically(delta, playerInstance.isJumping, playerInstance.playerBody.velocity);
   cameraFollowPlayer();
 
   render();

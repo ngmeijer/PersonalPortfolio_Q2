@@ -40,12 +40,19 @@ export default class CanvasController {
       this.xPosHome = this.home_style.left;
     }
     
-    moveUI(progress, direction, canMove) {
+    moveUIHorizontally(progress, direction, canMove) {
       if(direction == 0 || !canMove) return;
       if (direction == -1) {
           this.delta += this.foregroundSpeed * progress;
       } else this.delta -= this.foregroundSpeed * progress;
 
       this.home_element.style.left = `${parseInt(this.xPosHome, 10) + this.delta}px`;
+    }
+
+    moveUIVertically(progress, isJumping, velocity){
+      if(!isJumping) return;
+      if(velocity < 0.02 && velocity > -0.02) return;
+
+      console.log(isJumping, velocity)
     }
   }
