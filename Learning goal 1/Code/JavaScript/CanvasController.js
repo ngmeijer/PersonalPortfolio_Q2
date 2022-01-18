@@ -59,8 +59,6 @@ export default class CanvasController {
     if (!isJumping) return;
     if (yVelocity < 0.02 && yVelocity > -0.02) return;
 
-    console.log(yVelocity);
-
     this.verticalDelta += yVelocity * (progress * 100);
 
     this.home_element.style.top = `${

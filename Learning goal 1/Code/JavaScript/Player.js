@@ -12,14 +12,17 @@ export default class Player extends THREE.Object3D {
   canMove = true;
   delta;
   light;
-  lightOffset = new THREE.Vector3(1, 5, 3);
+  lightOffset = new THREE.Vector3(2, 2, 3);
 
-  constructor(pMoveSpeed, pJumpForce) {
+  constructor(pMoveSpeed, pJumpForce, pPosition) {
     super();
+    this.defaultMoveSpeed = pMoveSpeed;
+    this.playerPosition = pPosition;
+
     this.initializeGFX();
     this.initializeBody();
     this.initializeLight();
-    this.defaultMoveSpeed = pMoveSpeed;
+
     this.currentMoveSpeed = 0;
     this.jumpForce = pJumpForce;
     this.jumpDeltaPerFrame = this.jumpForce / this.framesToJump;
@@ -35,9 +38,9 @@ export default class Player extends THREE.Object3D {
     this.playerPosition = this.playerBody.position;
     this.playerBody.quaternion.set(0, 0, 0, 1);
     this.playerMesh.position.set(
-      this.playerBody.position.x,
-      this.playerBody.position.y,
-      this.playerBody.position.z
+      this.playerPosition.x,
+      this.playerPosition.y,
+      this.playerPosition.z
     );
     this.playerMesh.quaternion.set(
       this.playerBody.quaternion.x,
@@ -88,7 +91,7 @@ export default class Player extends THREE.Object3D {
   }
 
   initializeGFX() {
-    const playerGeo = new THREE.BoxGeometry(0.5, 1, 1);
+    const playerGeo = new THREE.BoxGeometry(0.5, 1, 0.5);
     const playerMat = new THREE.MeshStandardMaterial();
     playerMat.color.setHex(0xca0000);
     this.playerMesh = new THREE.Mesh(playerGeo, playerMat);
@@ -101,9 +104,9 @@ export default class Player extends THREE.Object3D {
     const playerShape = new CANNON.Box(new CANNON.Vec3(0.25, 0.5, 0.5));
     this.playerBody = new CANNON.Body({ mass: 1 });
     this.playerBody.addShape(playerShape);
-    this.playerBody.position.x = this.playerMesh.position.x;
-    this.playerBody.position.y = this.playerMesh.position.y;
-    this.playerBody.position.z = this.playerMesh.position.z;
+    this.playerBody.position.x = this.playerPosition.x;
+    this.playerBody.position.y = this.playerPosition.y;
+    this.playerBody.position.z = this.playerPosition.z;
     this.playerBody.restitution = 0;
   }
 }

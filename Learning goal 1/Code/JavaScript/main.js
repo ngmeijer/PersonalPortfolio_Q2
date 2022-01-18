@@ -6,6 +6,7 @@ import Player from "./Player.js";
 const scene = new THREE.Scene();
 const physicsWorld = new CANNON.World();
 physicsWorld.gravity.set(0, -12, 0);
+let moveableObjects = [];
 
 let playerInstance;
 const canvasController = new CanvasController(document, window);
@@ -13,6 +14,7 @@ let moveDirection = 0;
 let camera, renderer;
 
 let movementClock = new THREE.Clock();
+let physicsMat = new CANNON.Material("physicsMaterial");
 
 function createRenderingComponents() {
   camera = new THREE.PerspectiveCamera(
@@ -54,7 +56,7 @@ function createGround() {
 }
 
 function createPlayer() {
-  playerInstance = new Player(4, 6);
+  playerInstance = new Player(4, 7, new THREE.Vector3(2,0,0));
   canvasController.foregroundSpeed = playerInstance.defaultMoveSpeed * 100;
   physicsWorld.addBody(playerInstance.playerBody);
   scene.add(playerInstance.playerMesh);
@@ -90,6 +92,7 @@ function createPlayer() {
 
 function createHomeArea() {
   let stairStep1 = new Cube(
+    "StairStep1",
     new THREE.Vector3(2, 1, 3),
     new THREE.Vector3(5, -6.5, 0),
     0x202020,
@@ -100,6 +103,7 @@ function createHomeArea() {
   physicsWorld.addBody(stairStep1.cubeBody);
 
   let stairStep2 = new Cube(
+    "StairStep2",
     new THREE.Vector3(2, 2, 3),
     new THREE.Vector3(7, -6, 0),
     0x202020,
@@ -111,19 +115,21 @@ function createHomeArea() {
 }
 
 function createPortfolioArea() {
-  let ground = new Cube(
+  let portfolioGround = new Cube(
+    "PortfolioGround",
     new THREE.Vector3(14, 3, 3),
     new THREE.Vector3(15, -5.5, 0),
     0x202020,
     true,
-    0
   );
-  scene.add(ground.cubeMesh);
-  physicsWorld.addBody(ground.cubeBody);
+  scene.add(portfolioGround.cubeMesh);
+  physicsWorld.addBody(portfolioGround.cubeBody);
+  //physicsWorld.addContactMaterial(portfolioGround.contactMat);
 
   let platform1 = new Cube(
-    new THREE.Vector3(3, 0.2, 1),
-    new THREE.Vector3(15.5, -2.8, 0.1),
+    "PortfolioPlatform1",
+    new THREE.Vector3(3, 0.2, 0.7),
+    new THREE.Vector3(15.5, -2.5, 0.1),
     0xCA6800,
     true,
     0
@@ -132,18 +138,31 @@ function createPortfolioArea() {
   physicsWorld.addBody(platform1.cubeBody);
 
   let platform2 = new Cube(
-    new THREE.Vector3(3, 0.2, 1),
-    new THREE.Vector3(11, -2.5, 0.1),
+    "PortfolioPlatform2",
+    new THREE.Vector3(3, 0.2, 1.3),
+    new THREE.Vector3(11, -2, 0.1),
+    0xCA6800,
+    true,
+    0,
+  );
+  scene.add(platform2.cubeMesh);
+  physicsWorld.addBody(platform2.cubeBody);
+
+  let platform3 = new Cube(
+    "PortfolioPlatform3",
+    new THREE.Vector3(3, 0.2, 2),
+    new THREE.Vector3(14.5, -0.1, 0.1),
     0xCA6800,
     true,
     0
   );
-  scene.add(platform2.cubeMesh);
-  physicsWorld.addBody(platform2.cubeBody);
+  scene.add(platform3.cubeMesh);
+  physicsWorld.addBody(platform3.cubeBody);
 }
 
 function createAboutMeArea(){
   let door = new Cube(
+    "BlueDoor",
     new THREE.Vector3(1, 5, 3),
     new THREE.Vector3(20, -1.5, 0),
     0x000E5B,
@@ -154,14 +173,20 @@ function createAboutMeArea(){
   physicsWorld.addBody(door.cubeBody);
 
   let blueCube = new Cube(
+    "BlueCube",
     new THREE.Vector3(1, 1, 1),
-    new THREE.Vector3(18, -1.5, 0),
+    new THREE.Vector3(0, -0, 0),
     0x000E5B,
     false,
+    0.1,
+    physicsMat,
+    0,
     1
   );
   scene.add(blueCube.cubeMesh);
   physicsWorld.addBody(blueCube.cubeBody);
+  physicsWorld.addContactMaterial(blueCube.contactMat);
+  moveableObjects.push(blueCube);
 }
 
 window.addEventListener("resize", onWindowResize, false);
@@ -197,6 +222,10 @@ function animate() {
   physicsWorld.step(delta);
 
   playerInstance.update(delta);
+  moveableObjects.forEach(element => {
+    element.update();
+  });
+  
   canvasController.moveUIHorizontally(delta, moveDirection, playerInstance.canMove);
   canvasController.moveUIVertically(delta, playerInstance.isJumping, playerInstance.velocity.y);
   cameraFollowPlayer();
