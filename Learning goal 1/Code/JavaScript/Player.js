@@ -12,7 +12,7 @@ export default class Player extends THREE.Object3D {
   canMove = true;
   delta;
   light;
-  lightOffset = new THREE.Vector3(2, 2, 3);
+  lightOffset = new THREE.Vector3(0, 20, 5);
 
   constructor(pMoveSpeed, pJumpForce, pPosition) {
     super();
@@ -84,10 +84,11 @@ export default class Player extends THREE.Object3D {
   }
 
   initializeLight() {
-    this.light = new THREE.PointLight();
-    this.light.angle = 180;
-    this.light.intensity = 2;
+    this.light = new THREE.SpotLight();
+    // this.light.angle = 180;
+    this.light.intensity = 1.5;
     this.light.castShadow = true;
+    this.light.lookAt(this.playerBody.position);
   }
 
   initializeGFX() {

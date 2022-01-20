@@ -1,15 +1,23 @@
-import CanvasController from "./CanvasController.js";
 import Cube from "./Cube.js";
 import Plane from "./Plane.js";
 import Player from "./Player.js";
 
 const scene = new THREE.Scene();
 const physicsWorld = new CANNON.World();
+const fontLoader = new THREE.FontLoader();
+const textureLoader = new THREE.TextureLoader();
+fontLoader.load(
+	"../Fonts/Josefin_Sans_Regular.json",
+
+  function ( font ) {
+		createTHREEText(font);
+	},
+);
+
 physicsWorld.gravity.set(0, -12, 0);
 let moveableObjects = [];
 
 let playerInstance;
-const canvasController = new CanvasController(document, window);
 let moveDirection = 0;
 let camera, renderer;
 
@@ -32,6 +40,55 @@ function createRenderingComponents() {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   document.body.appendChild(renderer.domElement);
+}
+
+function createTHREEText(pFont){
+  createHomeIntroText(pFont);
+  createPortfolioText(pFont);
+}
+
+function createTHREEImages(){
+  const geo = new THREE.PlaneBufferGeometry(3.15, 1.77
+    );
+  const material = new THREE.MeshBasicMaterial({
+    map: textureLoader.load(`../Images/TDWE.png`)
+  });
+
+  const image = new THREE.Mesh(geo, material);
+
+  scene.add(image);
+  image.position.x = 11;
+  image.position.y = -1.01;
+}
+
+createTHREEImages();
+
+function createHomeIntroText(pFont){
+  const geometry = new THREE.TextGeometry('Press A/D to move horizontally!\nPress space to jump', {font: pFont, size: 0.4, height: 0.01, });
+  const textMesh = new THREE.Mesh(geometry,
+    [new THREE.MeshPhongMaterial({color: 0xad4000}),
+    new THREE.MeshPhongMaterial({color: 0x5c2301})
+  ]);
+
+  //textMesh.castShadow = true;
+  textMesh.position.x = -3.5;
+  textMesh.position.y = -4;
+  textMesh.position.z = -2;
+  scene.add(textMesh);
+}
+
+function createPortfolioText(pFont){
+  const geometry = new THREE.TextGeometry('Try colliding with my \nportfolio items...!', {font: pFont, size: 0.4, height: 0.01, });
+  const textMesh = new THREE.Mesh(geometry,
+    [new THREE.MeshPhongMaterial({color: 0xad4000}),
+    new THREE.MeshPhongMaterial({color: 0x5c2301})
+  ]);
+
+  //textMesh.castShadow = true;
+  textMesh.position.x = 8.5;
+  textMesh.position.y = -2.8;
+  textMesh.position.z = -2;
+  scene.add(textMesh);
 }
 
 function createGround() {
@@ -57,7 +114,6 @@ function createGround() {
 
 function createPlayer() {
   playerInstance = new Player(4, 7, new THREE.Vector3(2,0,0));
-  canvasController.foregroundSpeed = playerInstance.defaultMoveSpeed * 100;
   physicsWorld.addBody(playerInstance.playerBody);
   scene.add(playerInstance.playerMesh);
   scene.add(playerInstance.light);
@@ -226,8 +282,6 @@ function animate() {
     element.update();
   });
   
-  canvasController.moveUIHorizontally(delta, moveDirection, playerInstance.canMove);
-  canvasController.moveUIVertically(delta, playerInstance.isJumping, playerInstance.velocity.y);
   cameraFollowPlayer();
 
   render();

@@ -16,7 +16,7 @@ canvas {
   height: 100%;
 }
 
-#home-intro {
+/* #home-intro {
   position: absolute;
   top: 30vh;
   left: 10vw;
@@ -24,4 +24,4 @@ canvas {
   display: block;
   color: red;
   font-size: 2.2rem;
-}
+} */
