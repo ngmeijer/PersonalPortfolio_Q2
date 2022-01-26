@@ -21,7 +21,6 @@ export default class Player extends THREE.Object3D {
 
     this.initializeGFX();
     this.initializeBody();
-    this.initializeLight();
 
     this.currentMoveSpeed = 0;
     this.jumpForce = pJumpForce;
@@ -47,12 +46,6 @@ export default class Player extends THREE.Object3D {
       this.playerBody.quaternion.y,
       this.playerBody.quaternion.z,
       this.playerBody.quaternion.w
-    );
-
-    this.light.position.set(
-      this.playerBody.position.x + this.lightOffset.x,
-      this.playerBody.position.y + this.lightOffset.y,
-      this.playerBody.position.z + this.lightOffset.z
     );
 
     this.playerBody.velocity = this.velocity;
@@ -83,18 +76,10 @@ export default class Player extends THREE.Object3D {
     } else this.isJumping = false;
   }
 
-  initializeLight() {
-    this.light = new THREE.SpotLight();
-    // this.light.angle = 180;
-    this.light.intensity = 1.5;
-    this.light.castShadow = true;
-    this.light.lookAt(this.playerBody.position);
-  }
-
   initializeGFX() {
     const playerGeo = new THREE.BoxGeometry(0.5, 1, 0.5);
     const playerMat = new THREE.MeshStandardMaterial();
-    playerMat.color.setHex(0xca0000);
+    playerMat.color.setHex(0xF48C06);
     this.playerMesh = new THREE.Mesh(playerGeo, playerMat);
     this.playerMesh.castShadow = true;
     this.playerMesh.receiveShadow = true;

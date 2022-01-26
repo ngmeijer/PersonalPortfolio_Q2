@@ -4,8 +4,8 @@ export default class Cube extends THREE.Object3D {
   size;
   isStatic;
   mass;
-  cubeMesh;
-  cubeBody;
+  mesh;
+  body;
   colour;
   physicsMat;
   contactMat;
@@ -37,16 +37,16 @@ export default class Cube extends THREE.Object3D {
   }
 
   updateTransform() {
-    this.cubeMesh.position.set(
-      this.cubeBody.position.x,
-      this.cubeBody.position.y,
-      this.cubeBody.position.z
+    this.mesh.position.set(
+      this.body.position.x,
+      this.body.position.y,
+      this.body.position.z
     );
-    this.cubeMesh.quaternion.set(
-      this.cubeBody.quaternion.x,
-      this.cubeBody.quaternion.y,
-      this.cubeBody.quaternion.z,
-      this.cubeBody.quaternion.w
+    this.mesh.quaternion.set(
+      this.body.quaternion.x,
+      this.body.quaternion.y,
+      this.body.quaternion.z,
+      this.body.quaternion.w
     );
   }
 
@@ -62,24 +62,24 @@ export default class Cube extends THREE.Object3D {
       polygonOffsetUnits: -4.0,
     });
     material.color.setHex(this.colour);
-    this.cubeMesh = new THREE.Mesh(cubeGeo, material);
-    this.cubeMesh.position.x = this.cubePosition.x;
-    this.cubeMesh.position.y = this.cubePosition.y;
-    this.cubeMesh.position.z = this.cubePosition.z;
-    this.cubeMesh.castShadow = true;
-    this.cubeMesh.receiveShadow = true;
+    this.mesh = new THREE.Mesh(cubeGeo, material);
+    this.mesh.position.x = this.cubePosition.x;
+    this.mesh.position.y = this.cubePosition.y;
+    this.mesh.position.z = this.cubePosition.z;
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
   }
 
   createBody() {
     const cubeShape = new CANNON.Box(
       new CANNON.Vec3(this.size.x / 2, this.size.y / 2, this.size.z / 2)
     );
-    this.cubeBody = new CANNON.Body({ mass: this.mass });
+    this.body = new CANNON.Body({ mass: this.mass });
 
-    this.cubeBody.addShape(cubeShape);
-    this.cubeBody.position.x = this.cubeMesh.position.x;
-    this.cubeBody.position.y = this.cubeMesh.position.y;
-    this.cubeBody.position.z = this.cubeMesh.position.z;
+    this.body.addShape(cubeShape);
+    this.body.position.x = this.mesh.position.x;
+    this.body.position.y = this.mesh.position.y;
+    this.body.position.z = this.mesh.position.z;
   }
 
   createPhysicsMaterial(){
