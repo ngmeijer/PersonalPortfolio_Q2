@@ -23,7 +23,18 @@ export default class PortfolioItem extends THREE.Object3D {
   horizontalWallWidth;
   horizontalWallHeight;
 
-  constructor(pID, pImageFileName, pOuterSize, pInnerSize, pPosition, pTextColour, pPlatformColour) {
+  shouldCreatePlatform;
+
+  constructor(
+    pID,
+    pImageFileName,
+    pOuterSize,
+    pInnerSize,
+    pPosition,
+    pTextColour,
+    pPlatformColour,
+    pCreatePlatform = true
+  ) {
     super();
     this.ID = pID;
     this.imageFileName = pImageFileName;
@@ -32,11 +43,12 @@ export default class PortfolioItem extends THREE.Object3D {
     this.innerSize = pInnerSize;
     this.textColour = pTextColour;
     this.platformColour = pPlatformColour;
+    this.shouldCreatePlatform = pCreatePlatform;
 
     this.imageOffset = new THREE.Vector3(0, 0, -0.5);
 
     this.createFrame();
-    this.createPlatform();
+    if (this.shouldCreatePlatform) this.createPlatform();
   }
 
   createFrame() {
@@ -71,11 +83,11 @@ export default class PortfolioItem extends THREE.Object3D {
     this.meshRight = new THREE.Mesh(cubeGeoRight, material);
     this.meshTop = new THREE.Mesh(cubeGeoTop, material);
 
-    this.meshLeft.position.x = this.itemPosition.x - this.outerSize.x / 2;
+    this.meshLeft.position.x = this.itemPosition.x - this.outerSize.x / 2 + this.verticalWallWidth / 2;;
     this.meshLeft.position.y = this.itemPosition.y;
     this.meshLeft.position.z = this.itemPosition.z + this.imageOffset.z;
 
-    this.meshRight.position.x = this.itemPosition.x + this.outerSize.x / 2;
+    this.meshRight.position.x = this.itemPosition.x + this.outerSize.x / 2 + this.verticalWallWidth / 2;
     this.meshRight.position.y = this.itemPosition.y;
     this.meshRight.position.z = this.itemPosition.z + this.imageOffset.z;
 
@@ -88,10 +100,19 @@ export default class PortfolioItem extends THREE.Object3D {
 
     this.meshLeft.castShadow = true;
     this.meshLeft.receiveShadow = true;
+
+    this.meshRight.castShadow = true;
+    this.meshRight.receiveShadow = true;
+
+    this.meshTop.castShadow = true;
+    this.meshTop.receiveShadow = true;
   }
 
   createImage(textureLoader) {
-    const geo = new THREE.PlaneBufferGeometry(this.innerSize.x, this.innerSize.y);
+    const geo = new THREE.PlaneBufferGeometry(
+      this.innerSize.x,
+      this.innerSize.y
+    );
     const material = new THREE.MeshBasicMaterial({
       map: textureLoader.load(`../Images/` + this.imageFileName + ".png"),
     });
@@ -103,47 +124,47 @@ export default class PortfolioItem extends THREE.Object3D {
     this.image.position.z = this.itemPosition.z + this.imageOffset.z;
   }
 
-  createPlatform(){
+  createPlatform() {
     this.platform = new Cube(
       this.ID + "_Platform",
-      new THREE.Vector3(this.outerSize.x + (0.1 * this.outerSize.x), 0.2, 1),
-      new THREE.Vector3(this.itemPosition.x, this.itemPosition.y - 1.15, this.itemPosition.z),
+      new THREE.Vector3(this.outerSize.x + 0.1 * this.outerSize.x, 0.15, 1),
+      new THREE.Vector3(
+        this.itemPosition.x,
+        this.itemPosition.y - 1.15,
+        this.itemPosition.z
+      ),
       this.platformColour,
       true,
       0
     );
   }
 
-  createText(pFont){
-    const geometry = new THREE.TextGeometry(
-      "Press F",
-      { font: pFont, size: 0.4, height: 0.01 }
-    );
+  createText(pFont) {
+    const geometry = new THREE.TextGeometry("Press F", {
+      font: pFont,
+      size: 0.4,
+      height: 0.01,
+    });
     this.textMesh = new THREE.Mesh(geometry, [
       new THREE.MeshPhongMaterial({ color: 0xad4000 }),
       new THREE.MeshPhongMaterial({ color: 0x5c2301 }),
     ]);
-  
+
     this.textMesh.position.x = this.itemPosition.x;
     this.textMesh.position.y = this.itemPosition.y;
     this.textMesh.position.z = this.itemPosition.z;
   }
 
   addToScene(pScene, pPhysicsWorld) {
-    //Frame meshes
     pScene.add(this.meshLeft);
     pScene.add(this.meshRight);
     pScene.add(this.meshTop);
 
-    //Platform meshes
-    pScene.add(this.platform.mesh)
+    if (this.shouldCreatePlatform) pScene.add(this.platform.mesh);
+    if (this.shouldCreatePlatform) pPhysicsWorld.addBody(this.platform.body);
 
-    //Portfolio images
     pScene.add(this.image);
 
-    //Text
     //pScene.add(this.textMesh);
-
-    pPhysicsWorld.addBody(this.platform.body);
   }
 }

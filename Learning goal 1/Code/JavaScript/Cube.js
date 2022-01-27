@@ -1,6 +1,6 @@
 export default class Cube extends THREE.Object3D {
   ID;
-  cubePosition;
+  pos;
   size;
   isStatic;
   mass;
@@ -15,7 +15,7 @@ export default class Cube extends THREE.Object3D {
   constructor(pID, pSize, pPosition, pColour, pIsStatic, pMass = 0.0, pPhysicsMat = null, pFriction = 0.0, pRestitution = 0.0) {
     super();
     this.ID = pID;
-    this.cubePosition = pPosition;
+    this.pos = pPosition;
     this.size = pSize;
     this.colour = pColour;
     this.isStatic = pIsStatic;
@@ -63,9 +63,9 @@ export default class Cube extends THREE.Object3D {
     });
     material.color.setHex(this.colour);
     this.mesh = new THREE.Mesh(cubeGeo, material);
-    this.mesh.position.x = this.cubePosition.x;
-    this.mesh.position.y = this.cubePosition.y;
-    this.mesh.position.z = this.cubePosition.z;
+    this.mesh.position.x = this.pos.x;
+    this.mesh.position.y = this.pos.y;
+    this.mesh.position.z = this.pos.z;
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
   }
@@ -90,5 +90,11 @@ export default class Cube extends THREE.Object3D {
 
     this.contactMat = new CANNON.ContactMaterial(this.physicsMat, this.physicsMat, { friction: this.friction, restitution: this.restitution });
     console.log("Created contact material for object: " + this.ID + ". Restitution = " + this.restitution + ". Friction = " + this.friction);
+  }
+
+  addToScene(pScene, pPhysicsWorld = null){
+    pScene.add(this.mesh);
+    if (pPhysicsWorld == null) return;
+    pPhysicsWorld.addBody(this.body);
   }
 }

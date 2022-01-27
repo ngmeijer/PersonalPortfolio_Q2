@@ -7,9 +7,9 @@ export default class Portfolio {
   textureLoader;
   fontLoader;
 
-  instructionTextColor = 0xe85d04;
-  platformColor = 0x370617;
-  environmentColor = 0x6a040f;
+  instructionTextColor;
+  platformColor;
+  environmentColor;
 
   portfolioItems = [];
 
@@ -20,7 +20,13 @@ export default class Portfolio {
     this.physicsWorld = pPhysicsWorld;
     this.textureLoader = pTextureLoader;
     this.fontLoader = pFontloader;
+  }
 
+  overrideColours(){
+    
+  }
+
+  initialize(){
     this.createPortfolioGeometry();
     this.createPortfolioText();
     this.createPortfolioItems();
@@ -28,7 +34,16 @@ export default class Portfolio {
   }
 
   createPortfolioGeometry() {
-    
+    let stepItem1 = new Cube(
+      "P_StepItem1",
+      new THREE.Vector3(2, 1.25, 10),
+      new THREE.Vector3(19, 3.75, 0),
+      this.environmentColor,
+      true,
+      0
+    );
+
+    //stepItem1.addToScene(this.scene, this.physicsWorld);
   }
 
   createPortfolioText() {
@@ -37,23 +52,38 @@ export default class Portfolio {
     let textMesh;
 
     this.fontLoader.load(
-      "../Fonts/Josefin_Sans_Regular.json",
+      "../Fonts/El_Messiri_SemiBold_Regular.json",
 
       function (font) {
-        const geometry = new THREE.TextGeometry(
+        const hintGeo = new THREE.TextGeometry(
           "Try climbing up the platforms!",
           { font: font, size: 0.4, height: 0.01 }
         );
-        const textMesh = new THREE.Mesh(geometry, [
+        const hintMesh = new THREE.Mesh(hintGeo, [
           new THREE.MeshPhongMaterial({ color: textCol }),
           new THREE.MeshPhongMaterial({ color: textCol }),
         ]);
 
-        textMesh.position.x = 8.5;
-        textMesh.position.y = -3.2;
-        textMesh.position.z = -0.5;
+        hintMesh.position.x = 8.5;
+        hintMesh.position.y = 3.3;
+        hintMesh.position.z = -1.5;
+        hintMesh.castShadow = true;
+        scene.add(hintMesh);
 
-        scene.add(textMesh);
+        const titleGeo = new THREE.TextGeometry(
+          "Portfolio",
+          { font: font, size: 0.4, height: 0.01 }
+        );
+        const titleMesh = new THREE.Mesh(titleGeo, [
+          new THREE.MeshPhongMaterial({ color: textCol }),
+          new THREE.MeshPhongMaterial({ color: textCol }),
+        ]);
+
+        titleMesh.position.x = 8.5;
+        titleMesh.position.y = 9;
+        titleMesh.position.z = -1.5;
+        titleMesh.castShadow = true;
+        scene.add(titleMesh);
       }
     );
   }
@@ -66,9 +96,9 @@ export default class Portfolio {
     const TWDE_Item = new PortfolioItem(
       "TDWE_Portfolio",
       "TDWE",
-      new THREE.Vector2(3.9, 2.3),
-      new THREE.Vector3(3.7, 2.1),
-      new THREE.Vector3(16, -1.3, 0),
+      new THREE.Vector2(4, 2.36),
+      new THREE.Vector3(3.9, 2.2),
+      new THREE.Vector3(15, 5.7, 0),
       textCol,
       platformCol
     );
@@ -76,9 +106,9 @@ export default class Portfolio {
     const TWDE_Item2 = new PortfolioItem(
       "TDWE_Portfolio",
       "TDWE",
-      new THREE.Vector2(3.9, 2.3),
-      new THREE.Vector3(3.7, 2.1),
-      new THREE.Vector3(22, -1.3, 0),
+      new THREE.Vector2(4, 2.36),
+      new THREE.Vector3(3.9, 2.2),
+      new THREE.Vector3(20, 7.4, 0),
       textCol,
       platformCol
     );
@@ -86,18 +116,17 @@ export default class Portfolio {
     const TWDE_Item3 = new PortfolioItem(
       "TDWE_Portfolio",
       "TDWE",
-      new THREE.Vector2(3.9, 2.3),
-      new THREE.Vector3(3.7, 2.1),
-      new THREE.Vector3(28, -1.3, 0),
+      new THREE.Vector2(4, 2.36),
+      new THREE.Vector3(3.9, 2.2),
+      new THREE.Vector3(25, 5.7, 0),
       textCol,
-      platformCol
+      platformCol,
     );
 
     this.fontLoader.load(
-      "../Fonts/Josefin_Sans_Regular.json",
+      "../Fonts/Josefin_Sans_SemiBold_Regular.json",
 
       function (font) {
-
         TWDE_Item.createText(font);
         TWDE_Item2.createText(font);
       }
@@ -117,8 +146,8 @@ export default class Portfolio {
   }
 
   createLighting() {
-    const light = new THREE.PointLight(0xffba08, 2, 30);
-    light.position.set(25, 3, 1);
+    const light = new THREE.PointLight(0xffba08, 10, 15);
+    light.position.set(25, 12, 5);
     light.castShadow = true;
     this.scene.add(light);
   }

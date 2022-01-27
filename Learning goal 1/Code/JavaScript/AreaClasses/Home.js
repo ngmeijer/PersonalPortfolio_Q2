@@ -13,34 +13,48 @@ export default class Home {
     this.scene = pScene;
     this.physicsWorld = pPhysicsWorld;
     this.fontLoader = pFontLoader;
+  }
 
+  overrideColours(){
+    
+  }
+
+  initialize(){
     this.createStartGeometry();
     this.createStartText();
     this.createLighting();
   }
 
   createStartGeometry() {
-    let stairStep1 = new Cube(
-      "StairStep1",
-      new THREE.Vector3(2, 1, 15),
-      new THREE.Vector3(5, -6.5, 0),
+    let wall = new Cube(
+      "LeftWall",
+      new THREE.Vector3(2, 20, 50),
+      new THREE.Vector3(-8, 10, 0),
       this.environmentColor,
       true,
       0
     );
-    this.scene.add(stairStep1.mesh);
-    this.physicsWorld.addBody(stairStep1.body);
+    wall.addToScene(this.scene, this.physicsWorld);
+
+    let stairStep1 = new Cube(
+      "StairStep1",
+      new THREE.Vector3(2, 1, 15),
+      new THREE.Vector3(5, 0.5, 0),
+      this.environmentColor,
+      true,
+      0
+    );
+    stairStep1.addToScene(this.scene, this.physicsWorld);
 
     let stairStep2 = new Cube(
       "StairStep2",
       new THREE.Vector3(2, 2, 15),
-      new THREE.Vector3(7, -6, 0),
+      new THREE.Vector3(7, 1, 0),
       this.environmentColor,
       true,
       0
     );
-    this.scene.add(stairStep2.mesh);
-    this.physicsWorld.addBody(stairStep2.body);
+    stairStep2.addToScene(this.scene, this.physicsWorld);
   }
 
   createStartText() {
@@ -48,30 +62,45 @@ export default class Home {
     let textCol = this.instructionTextColor;
 
     this.fontLoader.load(
-      "../Fonts/Josefin_Sans_Regular.json",
+      "../Fonts/El_Messiri_SemiBold_Regular.json",
 
       function (font) {
-        const geometry = new THREE.TextGeometry(
-          "Press A/D to move horizontally!\nPress space to jump",
-          { font: font, size: 0.4, height: 0.01 }
+        const titleGeo = new THREE.TextGeometry(
+          "Home",
+          { font: font, size: 0.6, height: 0.01 }
         );
-        const textMesh = new THREE.Mesh(geometry, [
+        const titleMesh = new THREE.Mesh(titleGeo, [
           new THREE.MeshPhongMaterial({ color: textCol }),
           new THREE.MeshPhongMaterial({ color: textCol }),
         ]);
 
-        textMesh.position.x = -3.5;
-        textMesh.position.y = -4;
-        textMesh.position.z = -2;
+        titleMesh.position.x = -7;
+        titleMesh.position.y = 7;
+        titleMesh.position.z = -6;
+        titleMesh.castShadow = true;
+        scene.add(titleMesh);
 
-        scene.add(textMesh);
+        const hintGeo = new THREE.TextGeometry(
+          "Press A/D to move!\nPress space to jump",
+          { font: font, size: 0.4, height: 0.01 }
+        );
+        const hintMesh = new THREE.Mesh(hintGeo, [
+          new THREE.MeshPhongMaterial({ color: textCol }),
+          new THREE.MeshPhongMaterial({ color: textCol }),
+        ]);
+
+        hintMesh.position.x = -7;
+        hintMesh.position.y = 1;
+        hintMesh.position.z = -6;
+        hintMesh.castShadow = true;
+        scene.add(hintMesh);
       }
     );
   }
 
   createLighting() {
     const light = new THREE.PointLight(0xffba08, 10, 20);
-    light.position.set(-7, 3, 1);
+    light.position.set(0, 7, 0);
     light.castShadow = true;
     this.scene.add(light);
   }

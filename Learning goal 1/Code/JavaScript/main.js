@@ -19,18 +19,23 @@ let playerInstance;
 let moveDirection = 0;
 let camera, renderer;
 
-let environmentColor = 0x6a040f;
+let environmentColor = 0x100b13;
+let instructionTextColor = 0x9D0208;
+let platformColor = 0xE85D04;
 
+let websiteComponents = [];
+let doors = [];
+let doorMaxDistance = 3;
 
 function createRenderingComponents() {
-  camera = new THREE.PerspectiveCamera(
+  camera = new THREE.PerspectiveCamera( 
     50,
     window.innerWidth / window.innerHeight,
     0.1,
     1000
   );
 
-  camera.position.set(0, -2, 8);
+  camera.position.set(0, 3, 8);
 
   renderer = new THREE.WebGLRenderer({
     powerPreference: "high-performance",
@@ -38,15 +43,20 @@ function createRenderingComponents() {
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.antialias = true;
   document.body.appendChild(renderer.domElement);
 }
 
 function createPlayer() {
-  playerInstance = new Player(4, 7, new THREE.Vector3(-4, 0, 0));
+  playerInstance = new Player(4, 7, new THREE.Vector3(30, 10, 0));
   physicsWorld.addBody(playerInstance.playerBody);
   scene.add(playerInstance.playerMesh);
 
+  createMovementInput();
+}
+
+function createMovementInput(){
   document.addEventListener("keydown", function (event) {
     if (event.key == "a" || event.key == "A") {
       playerInstance.movingLeft = true;
@@ -77,18 +87,18 @@ function createPlayer() {
 
 function createGeneralGeometry(){
   let ground = new Plane(
-    new THREE.Vector2(40, 100),
-    new THREE.Vector3(0, -7, 0),
+    new THREE.Vector2(40, 50),
+    new THREE.Vector3(0, 0, 0),
     new THREE.Vector3(-90, 0, 0),
-    0x100b13,
+    environmentColor,
     true
   );
   scene.add(ground.planeMesh);
   physicsWorld.add(ground.planeBody);
 
   let background = new Plane(
-    new THREE.Vector2(40, 25),
-    new THREE.Vector3(0, -5, -25),
+    new THREE.Vector2(120, 25),
+    new THREE.Vector3(0, 0, -25),
     new THREE.Vector3(0, 0, 0),
     0x100b13,
     false
@@ -97,13 +107,12 @@ function createGeneralGeometry(){
 
   let higherGround = new Cube(
     "PortfolioGround",
-    new THREE.Vector3(30, 3, 15),
-    new THREE.Vector3(23, -5.5, 0),
+    new THREE.Vector3(120, 3, 15),
+    new THREE.Vector3(68, 1.5, 0),
     environmentColor,
     true
   );
-  scene.add(higherGround.mesh);
-  physicsWorld.addBody(higherGround.body);
+  higherGround.addToScene(scene, physicsWorld);
 }
 
 window.addEventListener("resize", onWindowResize, false);
@@ -114,10 +123,17 @@ function onWindowResize() {
   render();
 }
 
-let cameraOffset = new THREE.Vector3(1.5, 1.5, 0);
+let cameraOffset = new THREE.Vector3(1.5, 2, 0);
 function cameraFollowPlayer() {
   camera.position.x = playerInstance.playerBody.position.x + cameraOffset.x;
   camera.position.y = playerInstance.playerBody.position.y + cameraOffset.y;
+}
+
+function checkPlayerDistance(){
+  for(let i = 0; i < doors.length; i++){
+    let distance = playerInstance.playerPosition.distanceTo(doors[i].pos);
+    
+  }
 }
 
 function initialize() {
@@ -129,6 +145,22 @@ function initialize() {
   const home = new Home(scene, physicsWorld, fontLoader);
   const portfolio = new Portfolio(scene, physicsWorld, textureLoader, fontLoader);
   const aboutMe = new AboutMe(scene, physicsWorld, textureLoader, fontLoader);
+  const contactMe = new ContactMe(scene, physicsWorld, textureLoader, fontLoader);
+
+  websiteComponents.push(home);
+  websiteComponents.push(portfolio);
+  websiteComponents.push(aboutMe);
+  websiteComponents.push(contactMe);
+
+  for(let i = 0; i < websiteComponents.length; i++){
+    websiteComponents[i].instructionTextColor = instructionTextColor;
+    websiteComponents[i].platformColor = platformColor;
+    websiteComponents[i].environmentColor = environmentColor;
+
+    websiteComponents[i].initialize();
+  }
+
+  doors.push(aboutMe.door);
 }
 
 const frameClock = new THREE.Clock();
@@ -145,6 +177,9 @@ function animate() {
   });
 
   cameraFollowPlayer();
+  checkPlayerDistance();
+
+  TWEEN.update();
 
   render();
 }
