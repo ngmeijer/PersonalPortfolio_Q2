@@ -34,16 +34,27 @@ export default class Portfolio {
   }
 
   createPortfolioGeometry() {
-    let stepItem1 = new Cube(
-      "P_StepItem1",
-      new THREE.Vector3(2, 1.25, 10),
-      new THREE.Vector3(19, 3.75, 0),
+    let background = new Cube(
+      "Portfolio_Background",
+      new THREE.Vector3(26, 20, 10),
+      new THREE.Vector3(20, 1, -8),
       this.environmentColor,
       true,
       0
     );
 
-    //stepItem1.addToScene(this.scene, this.physicsWorld);
+    background.addToScene(this.scene, this.physicsWorld);
+
+    let backgroundLeft = new Cube(
+      "Portfolio_BackgroundLeft",
+      new THREE.Vector3(1, 20, 10),
+      new THREE.Vector3(7.5, 1, -6.5),
+      this.environmentColor,
+      true,
+      0
+    );
+
+    backgroundLeft.addToScene(this.scene, this.physicsWorld);
   }
 
   createPortfolioText() {
@@ -72,7 +83,7 @@ export default class Portfolio {
 
         const titleGeo = new THREE.TextGeometry(
           "Portfolio",
-          { font: font, size: 0.4, height: 0.01 }
+          { font: font, size: 0.7, height: 0.01 }
         );
         const titleMesh = new THREE.Mesh(titleGeo, [
           new THREE.MeshPhongMaterial({ color: textCol }),
@@ -81,7 +92,7 @@ export default class Portfolio {
 
         titleMesh.position.x = 8.5;
         titleMesh.position.y = 9;
-        titleMesh.position.z = -1.5;
+        titleMesh.position.z = -2;
         titleMesh.castShadow = true;
         scene.add(titleMesh);
       }
@@ -98,7 +109,7 @@ export default class Portfolio {
       "TDWE",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
-      new THREE.Vector3(15, 7, 0),
+      new THREE.Vector3(15, 6.5, 0),
       textCol,
       platformCol
     );
@@ -108,7 +119,7 @@ export default class Portfolio {
       "TDWE",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
-      new THREE.Vector3(20, 8.7, 0),
+      new THREE.Vector3(20, 8.2, 0),
       textCol,
       platformCol
     );
@@ -118,7 +129,7 @@ export default class Portfolio {
       "TDWE",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
-      new THREE.Vector3(25, 7, 0),
+      new THREE.Vector3(25, 6.5, 0),
       textCol,
       platformCol,
     );
@@ -146,8 +157,8 @@ export default class Portfolio {
   }
 
   createLighting() {
-    const light = new THREE.PointLight(0xffba08, 10, 15);
-    light.position.set(25, 12, 5);
+    const light = new THREE.PointLight(0xffba08, 4, 40);
+    light.position.set(25, 12, 10);
     light.castShadow = true;
     this.scene.add(light);
   }

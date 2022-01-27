@@ -42,7 +42,7 @@ export default class Door extends THREE.Object3D {
     );
 
     const tweenOpen = new TWEEN.Tween(this.doorGFX_Body.body.position)
-      .to({ x: targetPos.x, y: targetPos.y, z: targetPos.z }, 1000)
+      .to({ x: targetPos.x, y: targetPos.y, z: targetPos.z }, 1500)
       .easing(TWEEN.Easing.Quadratic.In)
       .start();
 
@@ -50,8 +50,6 @@ export default class Door extends THREE.Object3D {
   }
 
   closeDoor() {
-    console.log(this.originalPosition.y);
-
     const tweenClose = new TWEEN.Tween(this.doorGFX_Body.body.position)
       .to(
         {
@@ -59,7 +57,7 @@ export default class Door extends THREE.Object3D {
           y: this.originalPosition.y,
           z: this.originalPosition.z,
         },
-        1000
+        1500
       )
       .easing(TWEEN.Easing.Quadratic.Out)
       .start();

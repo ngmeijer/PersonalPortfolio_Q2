@@ -29,7 +29,7 @@ export default class Home {
     let wall = new Cube(
       "LeftWall",
       new THREE.Vector3(2, 20, 50),
-      new THREE.Vector3(-8, 10, 0),
+      new THREE.Vector3(-8, 0, 0),
       this.environmentColor,
       true,
       0
@@ -39,7 +39,7 @@ export default class Home {
     let stairStep1 = new Cube(
       "StairStep1",
       new THREE.Vector3(2, 1, 15),
-      new THREE.Vector3(5, 0.5, 0),
+      new THREE.Vector3(5, 0, 0),
       this.environmentColor,
       true,
       0
@@ -49,7 +49,7 @@ export default class Home {
     let stairStep2 = new Cube(
       "StairStep2",
       new THREE.Vector3(2, 2, 15),
-      new THREE.Vector3(7, 1, 0),
+      new THREE.Vector3(7, 0.5, 0),
       this.environmentColor,
       true,
       0
@@ -67,7 +67,7 @@ export default class Home {
       function (font) {
         const titleGeo = new THREE.TextGeometry(
           "Home",
-          { font: font, size: 0.6, height: 0.01 }
+          { font: font, size: 0.7, height: 0.01 }
         );
         const titleMesh = new THREE.Mesh(titleGeo, [
           new THREE.MeshPhongMaterial({ color: textCol }),

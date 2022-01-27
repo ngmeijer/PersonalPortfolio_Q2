@@ -14,6 +14,8 @@ export default class Player extends THREE.Object3D {
   light;
   lightOffset = new THREE.Vector3(0, 20, 5);
 
+  tweenScaleIn;
+
   constructor(pMoveSpeed, pJumpForce, pPosition) {
     super();
     this.defaultMoveSpeed = pMoveSpeed;
@@ -27,6 +29,28 @@ export default class Player extends THREE.Object3D {
     this.jumpDeltaPerFrame = this.jumpForce / this.framesToJump;
     this.movingLeft = false;
     this.movingRight = false;
+
+    this.tweenScaleIn = new TWEEN.Tween(this.playerMesh.scale)
+      .to(
+        {
+          x: this.playerMesh.scale.x - this.playerMesh.scale.x * 0.2,
+          y: this.playerMesh.scale.y,
+          z: this.playerMesh.scale.z,
+        },
+        500
+      )
+      .easing(TWEEN.Easing.Quadratic.In)
+
+      this.tweenScaleOut = new TWEEN.Tween(this.playerMesh.scale)
+      .to(
+        {
+          x: 1,
+          y: this.playerMesh.scale.y,
+          z: this.playerMesh.scale.z,
+        },
+        500
+      )
+      .easing(TWEEN.Easing.Quadratic.In)
   }
 
   update(delta) {
@@ -52,7 +76,13 @@ export default class Player extends THREE.Object3D {
   }
 
   handleMovement() {
-    if (!this.movingLeft && !this.movingRight) this.currentMoveSpeed = 0;
+    if (!this.movingLeft && !this.movingRight) {
+      this.currentMoveSpeed = 0;
+      if(this.playerMesh.scale.x != 1)this.tweenScaleOut.start();
+      return;
+    }
+
+    if(this.playerMesh.scale.x == 1)this.tweenScaleIn.start();
 
     if (this.movingLeft || this.movingRight)
       this.currentMoveSpeed = this.defaultMoveSpeed;
@@ -79,7 +109,7 @@ export default class Player extends THREE.Object3D {
   initializeGFX() {
     const playerGeo = new THREE.BoxGeometry(0.5, 1, 0.5);
     const playerMat = new THREE.MeshStandardMaterial();
-    playerMat.color.setHex(0xF48C06);
+    playerMat.color.setHex(0xf48c06);
     this.playerMesh = new THREE.Mesh(playerGeo, playerMat);
     this.playerMesh.castShadow = true;
     this.playerMesh.receiveShadow = true;

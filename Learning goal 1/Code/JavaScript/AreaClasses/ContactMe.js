@@ -33,7 +33,7 @@ export default class ContactMe {
 
   createLighting() {
     const light = new THREE.PointLight(0xffba08, 10, 20);
-    light.position.set(50, 7, 0);
+    light.position.set(75, 7, 0);
     light.castShadow = true;
     this.scene.add(light);
   }

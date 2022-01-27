@@ -43,13 +43,13 @@ function createRenderingComponents() {
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.antialias = true;
   document.body.appendChild(renderer.domElement);
 }
 
 function createPlayer() {
-  playerInstance = new Player(4, 7, new THREE.Vector3(25, 10, 0));
+  playerInstance = new Player(4, 7, new THREE.Vector3(0, 10, 0));
   physicsWorld.addBody(playerInstance.playerBody);
   scene.add(playerInstance.playerMesh);
 
@@ -108,7 +108,7 @@ function createGeneralGeometry() {
   let higherGround = new Cube(
     "PortfolioGround",
     new THREE.Vector3(120, 3, 15),
-    new THREE.Vector3(68, 1.5, 0),
+    new THREE.Vector3(68, 1, 0),
     environmentColor,
     true
   );
