@@ -1,4 +1,5 @@
 import Cube from "../Cube.js";
+import Door from "./Door.js";
 
 export default class AboutMe {
   scene;
@@ -15,45 +16,25 @@ export default class AboutMe {
     this.fontLoader = pFontloader;
   }
 
-  overrideColours(){
-    
-  }
+  overrideColours() {}
 
-  initialize(){
+  initialize() {
     this.createAboutMeArea();
     this.createLighting();
-    this.openDoor();
-  }
-
-  update(){
-
-  }
-
-  openDoor(){
-    const doorOpenTween = new TWEEN.Tween({x: 0, y: 0, z: 20}).to({x: 0, y: 5, z: 20}, 2000);
-
-    doorOpenTween.onUpdate(function (object: {
-      x: number;
-      y: number;
-      z: number;
-    }, elapsed:number){
-      this.door.mesh.position.set(object.x, object.y, object.z);
-    });
-    doorOpenTween.start();
   }
 
   createAboutMeArea() {
-    this.door = new Cube(
+    this.door = new Door(
       "BlueDoor",
       new THREE.Vector3(1, 25, 20),
       new THREE.Vector3(33, 4, 0),
-      0x9D0208,
-      true,
-      0
+      0x9d0208,
+      true
     );
-    this.scene.add(this.door.mesh);
-    this.physicsWorld.addBody(this.door.body);
-    }
+
+    this.scene.add(this.door.doorGFX_Body.mesh);
+    this.physicsWorld.addBody(this.door.doorGFX_Body.body);
+  }
 
   createLighting() {
     const light = new THREE.PointLight(0xffba08, 10, 20);

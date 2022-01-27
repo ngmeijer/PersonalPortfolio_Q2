@@ -20,15 +20,15 @@ let moveDirection = 0;
 let camera, renderer;
 
 let environmentColor = 0x100b13;
-let instructionTextColor = 0x9D0208;
-let platformColor = 0xE85D04;
+let instructionTextColor = 0x9d0208;
+let platformColor = 0xe85d04;
 
 let websiteComponents = [];
 let doors = [];
-let doorMaxDistance = 3;
+let doorMaxDistance = 6;
 
 function createRenderingComponents() {
-  camera = new THREE.PerspectiveCamera( 
+  camera = new THREE.PerspectiveCamera(
     50,
     window.innerWidth / window.innerHeight,
     0.1,
@@ -49,14 +49,14 @@ function createRenderingComponents() {
 }
 
 function createPlayer() {
-  playerInstance = new Player(4, 7, new THREE.Vector3(30, 10, 0));
+  playerInstance = new Player(4, 7, new THREE.Vector3(25, 10, 0));
   physicsWorld.addBody(playerInstance.playerBody);
   scene.add(playerInstance.playerMesh);
 
   createMovementInput();
 }
 
-function createMovementInput(){
+function createMovementInput() {
   document.addEventListener("keydown", function (event) {
     if (event.key == "a" || event.key == "A") {
       playerInstance.movingLeft = true;
@@ -85,7 +85,7 @@ function createMovementInput(){
   });
 }
 
-function createGeneralGeometry(){
+function createGeneralGeometry() {
   let ground = new Plane(
     new THREE.Vector2(40, 50),
     new THREE.Vector3(0, 0, 0),
@@ -129,10 +129,25 @@ function cameraFollowPlayer() {
   camera.position.y = playerInstance.playerBody.position.y + cameraOffset.y;
 }
 
-function checkPlayerDistance(){
-  for(let i = 0; i < doors.length; i++){
-    let distance = playerInstance.playerPosition.distanceTo(doors[i].pos);
-    
+function checkPlayerDistance() {
+  for (let i = 0; i < doors.length; i++) {
+    //Calculate distance
+    let distanceToDoor = playerInstance.playerPosition.distanceTo(doors[i].pos);
+
+    //Check if distance is too high.
+    if (distanceToDoor > doorMaxDistance) {
+      //Check if doors are closed. If so, skip this element in the loop.
+      if (!doors[i].isOpen) continue;
+
+      //Check if doors are open. If so, close door and move on to the next element.
+      if (doors[i].isOpen) {
+        doors[i].closeDoor();
+        continue;
+      }
+    }
+
+    //No need to check for distance. The loop only gets this far if the distance is less than the maxDistance.
+    if (!doors[i].isOpen) doors[i].openDoor();
   }
 }
 
@@ -141,18 +156,28 @@ function initialize() {
 
   createPlayer();
   createGeneralGeometry();
-  
+
   const home = new Home(scene, physicsWorld, fontLoader);
-  const portfolio = new Portfolio(scene, physicsWorld, textureLoader, fontLoader);
+  const portfolio = new Portfolio(
+    scene,
+    physicsWorld,
+    textureLoader,
+    fontLoader
+  );
   const aboutMe = new AboutMe(scene, physicsWorld, textureLoader, fontLoader);
-  const contactMe = new ContactMe(scene, physicsWorld, textureLoader, fontLoader);
+  const contactMe = new ContactMe(
+    scene,
+    physicsWorld,
+    textureLoader,
+    fontLoader
+  );
 
   websiteComponents.push(home);
   websiteComponents.push(portfolio);
   websiteComponents.push(aboutMe);
   websiteComponents.push(contactMe);
 
-  for(let i = 0; i < websiteComponents.length; i++){
+  for (let i = 0; i < websiteComponents.length; i++) {
     websiteComponents[i].instructionTextColor = instructionTextColor;
     websiteComponents[i].platformColor = platformColor;
     websiteComponents[i].environmentColor = environmentColor;
@@ -161,6 +186,7 @@ function initialize() {
   }
 
   doors.push(aboutMe.door);
+  moveableObjects.push(aboutMe.door);
 }
 
 const frameClock = new THREE.Clock();
@@ -180,7 +206,6 @@ function animate() {
   checkPlayerDistance();
 
   TWEEN.update();
-
   render();
 }
 
