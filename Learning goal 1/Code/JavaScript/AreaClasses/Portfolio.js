@@ -98,7 +98,7 @@ export default class Portfolio {
       "TDWE",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
-      new THREE.Vector3(15, 5.7, 0),
+      new THREE.Vector3(15, 7, 0),
       textCol,
       platformCol
     );
@@ -108,7 +108,7 @@ export default class Portfolio {
       "TDWE",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
-      new THREE.Vector3(20, 7.4, 0),
+      new THREE.Vector3(20, 8.7, 0),
       textCol,
       platformCol
     );
@@ -118,7 +118,7 @@ export default class Portfolio {
       "TDWE",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
-      new THREE.Vector3(25, 5.7, 0),
+      new THREE.Vector3(25, 7, 0),
       textCol,
       platformCol,
     );

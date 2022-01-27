@@ -26,8 +26,8 @@ export default class AboutMe {
   createAboutMeArea() {
     this.door = new Door(
       "BlueDoor",
-      new THREE.Vector3(1, 25, 20),
-      new THREE.Vector3(33, 4, 0),
+      new THREE.Vector3(0.1, 5, 20),
+      new THREE.Vector3(33, 4.5, 0),
       0x9d0208,
       true
     );

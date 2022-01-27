@@ -12,7 +12,17 @@ export default class Cube extends THREE.Object3D {
   friction;
   restitution;
 
-  constructor(pID, pSize, pPosition, pColour, pIsStatic, pMass = 0.0, pPhysicsMat = null, pFriction = 0.0, pRestitution = 0.0) {
+  constructor(
+    pID,
+    pSize,
+    pPosition,
+    pColour,
+    pIsStatic,
+    pMass = 0.0,
+    pPhysicsMat = null,
+    pFriction = 0.0,
+    pRestitution = 0.0
+  ) {
     super();
     this.ID = pID;
     this.pos = pPosition;
@@ -24,9 +34,16 @@ export default class Cube extends THREE.Object3D {
     this.friction = pFriction;
     this.restitution = pRestitution;
 
-    if(this.isStatic && this.mass != 0) console.log("Object '" + this.ID + "' is set to static but mass is " + this.mass)
-    if(!this.isStatic && this.mass == 0) console.log("Object '" + this.ID + "'s mass is set to 0 but is set to static.")
+    if (this.isStatic && this.mass != 0)
+      console.log(
+        "Object '" + this.ID + "' is set to static but mass is " + this.mass
+      );
+    if (!this.isStatic && this.mass == 0)
+      console.log(
+        "Object '" + this.ID + "'s mass is set to 0 but is set to static."
+      );
 
+    this.setOriginToBottom();
     this.createGraphics();
     this.createBody();
     this.createPhysicsMaterial();
@@ -34,6 +51,10 @@ export default class Cube extends THREE.Object3D {
 
   update() {
     this.updateTransform();
+  }
+
+  setOriginToBottom() {
+    this.pos.y += this.size.y / 2;
   }
 
   updateTransform() {
@@ -77,22 +98,30 @@ export default class Cube extends THREE.Object3D {
     this.body = new CANNON.Body({ mass: this.mass });
 
     this.body.addShape(cubeShape);
-    this.body.position.x = this.mesh.position.x;
-    this.body.position.y = this.mesh.position.y;
-    this.body.position.z = this.mesh.position.z;
+    this.body.position.x = this.pos.x;
+    this.body.position.y = this.pos.y;
+    this.body.position.z = this.pos.z;
   }
 
-  createPhysicsMaterial(){
-    if(this.physicsMat == null) {
-      console.log("No physics material assigned for object: " + this.ID + " (not required)");
-      return;
-    };
+  createPhysicsMaterial() {
+    if (this.physicsMat == null) return;
 
-    this.contactMat = new CANNON.ContactMaterial(this.physicsMat, this.physicsMat, { friction: this.friction, restitution: this.restitution });
-    console.log("Created contact material for object: " + this.ID + ". Restitution = " + this.restitution + ". Friction = " + this.friction);
+    this.contactMat = new CANNON.ContactMaterial(
+      this.physicsMat,
+      this.physicsMat,
+      { friction: this.friction, restitution: this.restitution }
+    );
+    console.log(
+      "Created contact material for object: " +
+        this.ID +
+        ". Restitution = " +
+        this.restitution +
+        ". Friction = " +
+        this.friction
+    );
   }
 
-  addToScene(pScene, pPhysicsWorld = null){
+  addToScene(pScene, pPhysicsWorld = null) {
     pScene.add(this.mesh);
     if (pPhysicsWorld == null) return;
     pPhysicsWorld.addBody(this.body);

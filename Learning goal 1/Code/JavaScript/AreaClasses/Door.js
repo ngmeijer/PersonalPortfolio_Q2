@@ -20,14 +20,14 @@ export default class Door extends THREE.Object3D {
 
     this.doorGFX_Body = new Cube(
       "AboutMeDoor",
-      new THREE.Vector3(1, 5, 20),
-      new THREE.Vector3(33, 5.5, 0),
+      new THREE.Vector3(pSize.x, pSize.y, pSize.z),
+      new THREE.Vector3(pPosition.x, pPosition.y, pPosition.z),
       0x9d0208,
       true,
       0
     );
 
-    this.originalPosition = this.pos;
+    this.originalPosition = this.doorGFX_Body.pos;
   }
 
   update() {
@@ -36,27 +36,32 @@ export default class Door extends THREE.Object3D {
 
   openDoor() {
     let targetPos = new THREE.Vector3(
-      this.doorGFX_Body.body.position.x,
-      10,
-      this.doorGFX_Body.body.position.z
+      this.originalPosition.x,
+      this.originalPosition.y + 8,
+      this.originalPosition.z
     );
 
     const tweenOpen = new TWEEN.Tween(this.doorGFX_Body.body.position)
       .to({ x: targetPos.x, y: targetPos.y, z: targetPos.z }, 1000)
+      .easing(TWEEN.Easing.Quadratic.In)
       .start();
 
     this.isOpen = true;
   }
- 
+
   closeDoor() {
-    let targetPos = new THREE.Vector3(
-      this.doorGFX_Body.body.position.x,
-      10,
-      this.doorGFX_Body.body.position.z
-    );
+    console.log(this.originalPosition.y);
 
     const tweenClose = new TWEEN.Tween(this.doorGFX_Body.body.position)
-      .to({ x: this.originalPosition.x, y: this.originalPosition.y, z: this.originalPosition.z }, 1000)
+      .to(
+        {
+          x: this.originalPosition.x,
+          y: this.originalPosition.y,
+          z: this.originalPosition.z,
+        },
+        1000
+      )
+      .easing(TWEEN.Easing.Quadratic.Out)
       .start();
 
     this.isOpen = false;
