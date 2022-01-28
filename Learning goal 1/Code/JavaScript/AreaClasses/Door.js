@@ -37,12 +37,12 @@ export default class Door extends THREE.Object3D {
   openDoor() {
     let targetPos = new THREE.Vector3(
       this.originalPosition.x,
-      this.originalPosition.y + 6,
+      this.originalPosition.y + 8,
       this.originalPosition.z
     );
 
     const tweenOpen = new TWEEN.Tween(this.doorComponent.body.position)
-      .to({ x: targetPos.x, y: targetPos.y, z: targetPos.z }, 1500)
+      .to({ x: targetPos.x, y: targetPos.y, z: targetPos.z }, 1000)
       .easing(TWEEN.Easing.Quadratic.In)
       .start();
 

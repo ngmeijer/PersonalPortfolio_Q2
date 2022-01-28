@@ -31,9 +31,10 @@ websiteComponents.push(contactMe);
 physicsWorld.gravity.set(0, -12, 0);
 
 let environmentColor = 0x100b13, instructionTextColor = 0x9d0208, platformColor = 0xe85d04;
-let moveDirection = 0;
-let doors = [];
-let playerPosition = new THREE.Vector3(30,10,0);
+let playerPosition = new THREE.Vector3(0,3,1);
+let levelLights = [];
+
+const lightDim = new TWEEN.Tween();
 
 function createRenderingComponents() {
   camera = new THREE.PerspectiveCamera(
@@ -55,7 +56,6 @@ function createRenderingComponents() {
   renderer.antialias = true;
   document.body.appendChild(renderer.domElement);
 }
-
 function createPlayer() {
   playerInstance = new Player(4, 7, playerPosition);
   physicsWorld.addBody(playerInstance.playerBody);
@@ -63,36 +63,31 @@ function createPlayer() {
 
   createMovementInput();
 }
-
 function createMovementInput() {
   document.addEventListener("keydown", function (event) {
     if (event.key == "a" || event.key == "A") {
       playerInstance.movingLeft = true;
-      moveDirection = -1;
     }
     if (event.key == "d" || event.key == "D") {
       playerInstance.movingRight = true;
-      moveDirection = 1;
     }
     if (event.key == " ") {
       playerInstance.handleJump();
     }
     if(event.key == "f" || event.key == "F"){
       playerInstance.moveIntoPortfolioItem();
+      dimLighting();
     }
   });
   document.addEventListener("keyup", function (event) {
     if (event.key == "a" || event.key == "A") {
       playerInstance.movingLeft = false;
-      moveDirection = 0;
     }
     if (event.key == "d" || event.key == "D") {
       playerInstance.movingRight = false;
-      moveDirection = 0;
     }
   });
 }
-
 function createGeneralGeometry() {
   let ground = new Plane(
     new THREE.Vector2(40, 50),
@@ -123,6 +118,12 @@ function createGeneralGeometry() {
   higherGround.addToScene(scene, physicsWorld);
 }
 
+function dimLighting(){
+  for(let i = 0; i < levelLights.length; i++){
+    //levelLights[i].distance = 10;
+  }
+}
+
 window.addEventListener("resize", onWindowResize, false);
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -150,10 +151,9 @@ function initialize() {
 
     websiteComponents[i].playerInstance = playerInstance;
 
-    websiteComponents[i].initialize();
+    websiteComponents[i].initializeArea();
+    levelLights.push(websiteComponents[i].lightComp);
   }
-
-  doors.push(aboutMe.door);
 }
 
 const frameClock = new THREE.Clock();

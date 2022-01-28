@@ -1,34 +1,32 @@
 import Cube from "../Cube.js";
+import AreaComponent from "./AreaComponent.js";
 import Door from "./Door.js";
 
-export default class AboutMe {
-  scene;
-  physicsWorld;
-  textureLoader;
-  fontLoader;
-
+export default class AboutMe extends AreaComponent {
   door;
   playerInstance;
   moveableObjects = [];
   doorMaxDistance = 6;
+  light;
 
   constructor(pScene, pPhysicsWorld, pTextureLoader, pFontloader) {
-    this.scene = pScene;
-    this.physicsWorld = pPhysicsWorld;
-    this.textureLoader = pTextureLoader;
-    this.fontLoader = pFontloader;
+    super(pScene, pPhysicsWorld, pTextureLoader, pFontloader);
   }
 
   overrideColours() {}
 
-  initialize() {
+  initializeArea() {
     this.createDoor();
     this.createLighting();
     this.creatAboutMeText();
     this.createAboutMeGeometry();
+
+    if(this.door == null) this.canUpdate = false;
   }
 
   update() {
+    if(this.canUpdate == false) return;
+
     this.checkPlayerDistance();
 
     for(let i = 0; i < this.moveableObjects.length; i++){
@@ -37,7 +35,7 @@ export default class AboutMe {
   }
 
   checkPlayerDistance() {
-    let distanceToDoor = this.playerInstance.playerPosition.distanceTo(
+    let distanceToDoor = this.playerInstance.pos.distanceTo(
       this.door.pos
     );
 
@@ -98,7 +96,6 @@ export default class AboutMe {
   creatAboutMeText() {
     let scene = this.scene;
     let textCol = this.instructionTextColor;
-    let textMesh;
 
     this.fontLoader.load(
       "../Fonts/El_Messiri_SemiBold_Regular.json",
@@ -124,9 +121,9 @@ export default class AboutMe {
   }
 
   createLighting() {
-    const light = new THREE.PointLight(0xffba08, 5, 30);
-    light.position.set(50, 7, 0);
-    light.castShadow = true;
-    this.scene.add(light);
+    this.light = new THREE.PointLight(0xffba08, 5, 30);
+    this.light.position.set(50, 7, 0);
+    this.light.castShadow = true;
+    this.scene.add(this.light);
   }
 }

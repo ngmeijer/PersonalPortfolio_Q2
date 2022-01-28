@@ -26,7 +26,7 @@ export default class Portfolio {
     
   }
 
-  initialize(){
+  initializeArea(){
     this.createPortfolioGeometry();
     this.createPortfolioText();
     this.createPortfolioItems();
@@ -121,7 +121,7 @@ export default class Portfolio {
     );
 
     const TWDE_Item2 = new PortfolioItem(
-      "TDWE_Portfolio",
+      "TDWE_Portfolio2",
       "TDWE",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
@@ -131,7 +131,7 @@ export default class Portfolio {
     );
 
     const TWDE_Item3 = new PortfolioItem(
-      "TDWE_Portfolio",
+      "TDWE_Portfolio3",
       "TDWE",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
@@ -151,21 +151,24 @@ export default class Portfolio {
 
     TWDE_Item.createImage(textureLoader);
     TWDE_Item.addToScene(this.scene, this.physicsWorld);
+    TWDE_Item.playerInstance = this.playerInstance;
     this.portfolioItems.push(TWDE_Item);
 
     TWDE_Item2.createImage(textureLoader);
     TWDE_Item2.addToScene(this.scene, this.physicsWorld);
+    TWDE_Item2.playerInstance = this.playerInstance;
     this.portfolioItems.push(TWDE_Item2);
 
     TWDE_Item3.createImage(textureLoader);
     TWDE_Item3.addToScene(this.scene, this.physicsWorld);
+    TWDE_Item3.playerInstance = this.playerInstance;
     this.portfolioItems.push(TWDE_Item3);
   }
 
   createLighting() {
-    const light = new THREE.PointLight(0xffba08, 4, 40);
-    light.position.set(25, 12, 10);
-    light.castShadow = true;
-    this.scene.add(light);
+    this.light = new THREE.PointLight(0xffba08, 4, 40);
+    this.light.position.set(25, 12, 10);
+    this.light.castShadow = true;
+    this.scene.add(this.light);
   }
 }

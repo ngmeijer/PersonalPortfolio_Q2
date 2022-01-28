@@ -21,14 +21,14 @@ export default class Home {
     
   }
 
-  initialize(){
+  initializeArea(){
     this.createStartGeometry();
     this.createStartText();
     this.createLighting();
   }
 
   update(){
-    
+
   }
 
   createStartGeometry() {
@@ -105,9 +105,9 @@ export default class Home {
   }
 
   createLighting() {
-    const light = new THREE.PointLight(0xffba08, 10, 20);
-    light.position.set(0, 7, 0);
-    light.castShadow = true;
-    this.scene.add(light);
+    this.light = new THREE.PointLight(0xffba08, 10, 20);
+    this.light.position.set(0, 7, 0);
+    this.light.castShadow = true;
+    this.scene.add(this.light);
   }
 }

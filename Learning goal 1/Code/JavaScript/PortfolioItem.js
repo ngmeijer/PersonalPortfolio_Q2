@@ -16,6 +16,8 @@ export default class PortfolioItem extends THREE.Object3D {
   imageOffset;
   textureLoader;
   textMesh;
+  playerInstance;
+  playerOnPlatform;
 
   verticalWallWidth;
   verticalWallHeight;
@@ -127,7 +129,7 @@ export default class PortfolioItem extends THREE.Object3D {
   createPlatform() {
     this.platform = new Cube(
       this.ID + "_Platform",
-      new THREE.Vector3(this.outerSize.x + 0.1 * this.outerSize.x, 0.15, 1),
+      new THREE.Vector3(this.outerSize.x + 0.1 * this.outerSize.x, 0.15, 8),
       new THREE.Vector3(
         this.itemPosition.x,
         this.itemPosition.y - 1.15,
@@ -157,10 +159,13 @@ export default class PortfolioItem extends THREE.Object3D {
     this.textMesh.position.z = this.itemPosition.z;
   }
 
-  checkPlayerOnPlatform(pPlayerDistance, pPlayerY){
-    if(pPlayerDistance < 1 && pPlayerY >= this.platform.position.y){
-      console.log("Standing on platform.");
-    }
+  checkPlayerOnPlatform(){
+    let playerDistance = this.playerInstance.pos.distanceTo(
+      this.itemPosition
+    );
+    if(playerDistance < 1.3 && this.playerInstance.pos.y >= this.platform.position.y){
+      this.playerOnPlatform = true;
+    } else this.playerOnPlatform = false;
   }
 
   addToScene(pScene, pPhysicsWorld) {
