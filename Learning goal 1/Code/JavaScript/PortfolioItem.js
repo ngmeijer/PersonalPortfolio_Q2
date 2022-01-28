@@ -98,13 +98,13 @@ export default class PortfolioItem extends THREE.Object3D {
       this.horizontalWallHeight / 2;
     this.meshTop.position.z = this.itemPosition.z + this.imageOffset.z;
 
-    this.meshLeft.castShadow = true;
+    this.meshLeft.castShadow = false;
     this.meshLeft.receiveShadow = true;
 
-    this.meshRight.castShadow = true;
+    this.meshRight.castShadow = false;
     this.meshRight.receiveShadow = true;
 
-    this.meshTop.castShadow = true;
+    this.meshTop.castShadow = false;
     this.meshTop.receiveShadow = true;
   }
 
@@ -137,6 +137,8 @@ export default class PortfolioItem extends THREE.Object3D {
       true,
       0
     );
+
+    this.platform.mesh.castShadow = false;
   }
 
   createText(pFont) {
@@ -153,6 +155,12 @@ export default class PortfolioItem extends THREE.Object3D {
     this.textMesh.position.x = this.itemPosition.x;
     this.textMesh.position.y = this.itemPosition.y;
     this.textMesh.position.z = this.itemPosition.z;
+  }
+
+  checkPlayerOnPlatform(pPlayerDistance, pPlayerY){
+    if(pPlayerDistance < 1 && pPlayerY >= this.platform.position.y){
+      console.log("Standing on platform.");
+    }
   }
 
   addToScene(pScene, pPhysicsWorld) {

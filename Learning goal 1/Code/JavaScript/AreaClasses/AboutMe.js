@@ -8,6 +8,9 @@ export default class AboutMe {
   fontLoader;
 
   door;
+  playerInstance;
+  moveableObjects = [];
+  doorMaxDistance = 6;
 
   constructor(pScene, pPhysicsWorld, pTextureLoader, pFontloader) {
     this.scene = pScene;
@@ -25,17 +28,47 @@ export default class AboutMe {
     this.createAboutMeGeometry();
   }
 
+  update() {
+    this.checkPlayerDistance();
+
+    for(let i = 0; i < this.moveableObjects.length; i++){
+      this.moveableObjects[i].update();
+    }
+  }
+
+  checkPlayerDistance() {
+    let distanceToDoor = this.playerInstance.playerPosition.distanceTo(
+      this.door.pos
+    );
+
+    //Check if distance is too high.
+    if (distanceToDoor > this.doorMaxDistance) {
+      //Check if doors are closed. If so, skip this element in the loop.
+      if (!this.door.isOpen) return;
+
+      //Check if doors are open. If so, close door and move on to the next element.
+      if (this.door.isOpen) {
+        this.door.closeDoor();
+        return;
+      }
+    }
+
+    //No need to check for distance. The loop only gets this far if the distance is less than the maxDistance.
+    if (!this.door.isOpen) this.door.openDoor();
+  }
+
   createDoor() {
     this.door = new Door(
-      "BlueDoor",
+      "AboutMeDoor",
       new THREE.Vector3(1, 25, 20),
       new THREE.Vector3(33.5, 4, 0),
       0x9d0208,
       true
     );
 
-    this.scene.add(this.door.doorGFX_Body.mesh);
-    this.physicsWorld.addBody(this.door.doorGFX_Body.body);
+    this.scene.add(this.door.doorComponent.mesh);
+    this.physicsWorld.addBody(this.door.doorComponent.body);
+    this.moveableObjects.push(this.door);
   }
 
   createAboutMeGeometry() {
@@ -71,10 +104,11 @@ export default class AboutMe {
       "../Fonts/El_Messiri_SemiBold_Regular.json",
 
       function (font) {
-        const titleGeo = new THREE.TextGeometry(
-          "About me",
-          { font: font, size: 0.7, height: 0.01 }
-        );
+        const titleGeo = new THREE.TextGeometry("About me", {
+          font: font,
+          size: 0.7,
+          height: 0.01,
+        });
         const titleMesh = new THREE.Mesh(titleGeo, [
           new THREE.MeshPhongMaterial({ color: textCol }),
           new THREE.MeshPhongMaterial({ color: textCol }),

@@ -9,6 +9,8 @@ export default class Home {
   platformColor = 0x370617;
   environmentColor = 0x6a040f;
 
+  playerInstance;
+
   constructor(pScene, pPhysicsWorld, pFontLoader) {
     this.scene = pScene;
     this.physicsWorld = pPhysicsWorld;
@@ -23,6 +25,10 @@ export default class Home {
     this.createStartGeometry();
     this.createStartText();
     this.createLighting();
+  }
+
+  update(){
+    
   }
 
   createStartGeometry() {

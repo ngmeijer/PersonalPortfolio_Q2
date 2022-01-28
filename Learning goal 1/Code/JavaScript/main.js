@@ -6,26 +6,34 @@ import Home from "./AreaClasses/Home.js";
 import Portfolio from "./AreaClasses/Portfolio.js";
 import AboutMe from "./AreaClasses/AboutMe.js";
 import ContactMe from "./AreaClasses/ContactMe.js";
+/////////////////
+
 
 const scene = new THREE.Scene();
 const physicsWorld = new CANNON.World();
 const fontLoader = new THREE.FontLoader();
 const textureLoader = new THREE.TextureLoader();
 
-physicsWorld.gravity.set(0, -12, 0);
-let moveableObjects = [];
-
 let playerInstance;
-let moveDirection = 0;
 let camera, renderer;
 
-let environmentColor = 0x100b13;
-let instructionTextColor = 0x9d0208;
-let platformColor = 0xe85d04;
+const home = new Home(scene, physicsWorld, fontLoader);
+const portfolio = new Portfolio(scene, physicsWorld, textureLoader, fontLoader);
+const aboutMe = new AboutMe(scene, physicsWorld, textureLoader, fontLoader);
+const contactMe = new ContactMe(scene, physicsWorld, textureLoader, fontLoader);
 
 let websiteComponents = [];
+websiteComponents.push(home);
+websiteComponents.push(portfolio);
+websiteComponents.push(aboutMe);
+websiteComponents.push(contactMe);
+
+physicsWorld.gravity.set(0, -12, 0);
+
+let environmentColor = 0x100b13, instructionTextColor = 0x9d0208, platformColor = 0xe85d04;
+let moveDirection = 0;
 let doors = [];
-let doorMaxDistance = 6;
+let playerPosition = new THREE.Vector3(30,10,0);
 
 function createRenderingComponents() {
   camera = new THREE.PerspectiveCamera(
@@ -49,7 +57,7 @@ function createRenderingComponents() {
 }
 
 function createPlayer() {
-  playerInstance = new Player(4, 7, new THREE.Vector3(0, 10, 0));
+  playerInstance = new Player(4, 7, playerPosition);
   physicsWorld.addBody(playerInstance.playerBody);
   scene.add(playerInstance.playerMesh);
 
@@ -66,6 +74,12 @@ function createMovementInput() {
       playerInstance.movingRight = true;
       moveDirection = 1;
     }
+    if (event.key == " ") {
+      playerInstance.handleJump();
+    }
+    if(event.key == "f" || event.key == "F"){
+      playerInstance.moveIntoPortfolioItem();
+    }
   });
   document.addEventListener("keyup", function (event) {
     if (event.key == "a" || event.key == "A") {
@@ -75,12 +89,6 @@ function createMovementInput() {
     if (event.key == "d" || event.key == "D") {
       playerInstance.movingRight = false;
       moveDirection = 0;
-    }
-  });
-
-  document.addEventListener("keydown", function (event) {
-    if (event.key == " ") {
-      playerInstance.handleJump();
     }
   });
 }
@@ -129,64 +137,23 @@ function cameraFollowPlayer() {
   camera.position.y = playerInstance.playerBody.position.y + cameraOffset.y;
 }
 
-function checkPlayerDistance() {
-  for (let i = 0; i < doors.length; i++) {
-    //Calculate distance
-    let distanceToDoor = playerInstance.playerPosition.distanceTo(doors[i].pos);
-
-    //Check if distance is too high.
-    if (distanceToDoor > doorMaxDistance) {
-      //Check if doors are closed. If so, skip this element in the loop.
-      if (!doors[i].isOpen) continue;
-
-      //Check if doors are open. If so, close door and move on to the next element.
-      if (doors[i].isOpen) {
-        doors[i].closeDoor();
-        continue;
-      }
-    }
-
-    //No need to check for distance. The loop only gets this far if the distance is less than the maxDistance.
-    if (!doors[i].isOpen) doors[i].openDoor();
-  }
-}
-
 function initialize() {
   createRenderingComponents();
 
   createPlayer();
   createGeneralGeometry();
 
-  const home = new Home(scene, physicsWorld, fontLoader);
-  const portfolio = new Portfolio(
-    scene,
-    physicsWorld,
-    textureLoader,
-    fontLoader
-  );
-  const aboutMe = new AboutMe(scene, physicsWorld, textureLoader, fontLoader);
-  const contactMe = new ContactMe(
-    scene,
-    physicsWorld,
-    textureLoader,
-    fontLoader
-  );
-
-  websiteComponents.push(home);
-  websiteComponents.push(portfolio);
-  websiteComponents.push(aboutMe);
-  websiteComponents.push(contactMe);
-
   for (let i = 0; i < websiteComponents.length; i++) {
     websiteComponents[i].instructionTextColor = instructionTextColor;
     websiteComponents[i].platformColor = platformColor;
     websiteComponents[i].environmentColor = environmentColor;
 
+    websiteComponents[i].playerInstance = playerInstance;
+
     websiteComponents[i].initialize();
   }
 
   doors.push(aboutMe.door);
-  moveableObjects.push(aboutMe.door);
 }
 
 const frameClock = new THREE.Clock();
@@ -198,12 +165,11 @@ function animate() {
   physicsWorld.step(delta);
 
   playerInstance.update(delta);
-  moveableObjects.forEach((element) => {
-    element.update();
-  });
+  for (let i = 0; i < websiteComponents.length; i++) {
+    websiteComponents[i].update();
+  }
 
   cameraFollowPlayer();
-  checkPlayerDistance();
 
   TWEEN.update();
   render();

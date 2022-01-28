@@ -22,7 +22,8 @@ export default class Cube extends THREE.Object3D {
     pPhysicsMat = null,
     pFriction = 0.0,
     pRestitution = 0.0
-  ) {
+  ) 
+    {
     super();
     this.ID = pID;
     this.pos = pPosition;

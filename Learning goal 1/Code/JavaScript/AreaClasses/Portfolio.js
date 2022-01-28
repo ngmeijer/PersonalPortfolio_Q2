@@ -7,13 +7,13 @@ export default class Portfolio {
   textureLoader;
   fontLoader;
 
+  playerInstance;
+
   instructionTextColor;
   platformColor;
   environmentColor;
 
   portfolioItems = [];
-
-  TestVar = 0;
 
   constructor(pScene, pPhysicsWorld, pTextureLoader, pFontloader) {
     this.scene = pScene;
@@ -31,6 +31,12 @@ export default class Portfolio {
     this.createPortfolioText();
     this.createPortfolioItems();
     this.createLighting();
+  }
+
+  update(){
+    for(let i = 0; i < this.portfolioItems.length; i++){
+      this.portfolioItems[i].checkPlayerOnPlatform();
+    }
   }
 
   createPortfolioGeometry() {

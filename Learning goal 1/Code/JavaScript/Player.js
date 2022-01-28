@@ -51,6 +51,8 @@ export default class Player extends THREE.Object3D {
         500
       )
       .easing(TWEEN.Easing.Quadratic.In)
+
+
   }
 
   update(delta) {
@@ -73,6 +75,10 @@ export default class Player extends THREE.Object3D {
     );
 
     this.playerBody.velocity = this.velocity;
+  }
+
+  moveIntoPortfolioItem(){
+    console.log("moving into portfolio item");
   }
 
   handleMovement() {

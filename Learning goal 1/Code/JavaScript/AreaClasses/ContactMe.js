@@ -18,6 +18,10 @@ export default class ContactMe {
     this.createLighting();
   }
 
+  update(){
+    
+  }
+
   createContactMeArea() {
     let door = new Cube(
       "BlueDoor",
