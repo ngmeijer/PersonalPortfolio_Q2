@@ -1,6 +1,7 @@
 export default class Player extends THREE.Object3D {
   playerMesh;
   playerBody;
+  noseMesh;
   pos;
   defaultMoveSpeed;
   currentMoveSpeed;
@@ -19,9 +20,20 @@ export default class Player extends THREE.Object3D {
   tweenJumpIn;
   tweenJumpOut;
   tweenRotate;
+  tweenMoveLeft;
+  tweenMoveRight;
   tweenMoveIntoZ;
   originalScale;
   currentScale;
+
+  movingLeftRotation = 3.14159;
+  movingRightRotation = 0;
+  movingInRotation = 1.5708;
+
+  facingLeft;
+  facingRight = true;
+
+  group;
 
   constructor(pMoveSpeed, pJumpForce, pPosition) {
     super();
@@ -33,7 +45,6 @@ export default class Player extends THREE.Object3D {
 
     this.currentMoveSpeed = 0;
     this.jumpForce = pJumpForce;
-    this.jumpDeltaPerFrame = this.jumpForce / this.framesToJump;
     this.movingLeft = false;
     this.movingRight = false;
 
@@ -47,17 +58,17 @@ export default class Player extends THREE.Object3D {
     this.handleMovement();
 
     this.playerBody.quaternion.set(0, 0, 0, 1);
-    this.playerMesh.position.set(
+    this.group.position.set(
       this.playerBody.position.x,
       this.playerBody.position.y,
       this.playerBody.position.z
     );
-    this.playerMesh.quaternion.set(
-      this.playerBody.quaternion.x,
-      this.playerBody.quaternion.y,
-      this.playerBody.quaternion.z,
-      this.playerBody.quaternion.w
-    );
+    // this.group.quaternion.set(
+    //   this.playerBody.quaternion.x,
+    //   this.playerBody.quaternion.y,
+    //   this.playerBody.quaternion.z,
+    //   this.playerBody.quaternion.w
+    // );
 
     this.pos = this.playerBody.position;
     this.playerBody.velocity = this.velocity;
@@ -108,28 +119,49 @@ export default class Player extends THREE.Object3D {
       )
       .easing(TWEEN.Easing.Cubic.In);
 
-    let rotY = THREE.MathUtils.degToRad(90);
-
-    this.tweenRotate = new TWEEN.Tween(this.playerMesh.rotation)
+    this.tweenRotate = new TWEEN.Tween(this.group.rotation)
       .to(
         {
-          x: this.playerMesh.rotation.x,
-          y: this.playerMesh.rotation.y + rotY,
-          z: this.playerMesh.rotation.z,
+          x: this.group.rotation.x,
+          y: this.group.rotation.y + this.movingInRotation,
+          z: this.group.rotation.z,
         },
         1000
       )
       .easing(TWEEN.Easing.Quartic.Out);
+
+    this.tweenMoveLeft = new TWEEN.Tween(this.group.rotation, this.playerBody.rotation)
+      .to(
+        {
+          x: this.group.rotation.x,
+          y: this.group.rotation.y + this.movingLeftRotation,
+          z: this.group.rotation.z,
+        },
+        500
+      )
+      .easing(TWEEN.Easing.Quartic.Out)
+
+    this.tweenMoveRight = new TWEEN.Tween(this.group.rotation)
+      .to(
+        {
+          x: this.group.rotation.x,
+          y: this.movingRightRotation,
+          z: this.group.rotation.z,
+        },
+        500
+      )
+      .easing(TWEEN.Easing.Quartic.Out);
+
   }
 
   moveIntoPortfolioItem() {
     //Since Tweens cannot get updated during runtime (as far as I've found), I'll have to create a new one every time I have to play the animation
-    this.tweenMoveIntoZ = new TWEEN.Tween(this.playerMesh.position)
+    this.tweenMoveIntoZ = new TWEEN.Tween(this.group.position)
       .to(
         {
-          x: this.playerMesh.position.x,
-          y: this.playerMesh.position.y,
-          z: this.playerMesh.position.z - 5,
+          x: this.group.position.x,
+          y: this.group.position.y,
+          z: this.group.position.z - 2,
         },
         1000
       )
@@ -143,24 +175,26 @@ export default class Player extends THREE.Object3D {
   handleMovement() {
     if (!this.movingLeft && !this.movingRight) {
       this.currentMoveSpeed = 0;
-      if (this.playerMesh.scale.x != 1) this.tweenScaleOut.start();
       return;
     }
-
-    if (this.playerMesh.scale.x == 1) this.tweenScaleIn.start();
 
     if (this.movingLeft || this.movingRight)
       this.currentMoveSpeed = this.defaultMoveSpeed;
 
     if (this.movingLeft) {
+      if (this.facingRight) this.tweenMoveLeft.start();
       this.movingRight = false;
       this.playerBody.position.x =
         this.playerBody.position.x - this.currentMoveSpeed * this.delta;
+      this.hasPlayedLeftAnimation = true;
+      this.facingRight = false;
     }
     if (this.movingRight) {
+      if (!this.facingRight) this.tweenMoveRight.start();
       this.movingLeft = false;
       this.playerBody.position.x =
         this.playerBody.position.x + this.currentMoveSpeed * this.delta;
+      this.facingRight = true;
     }
   }
 
@@ -172,14 +206,25 @@ export default class Player extends THREE.Object3D {
   }
 
   initializeGFX() {
+    this.group = new THREE.Group();
+
     const playerGeo = new THREE.BoxGeometry(0.5, 1, 0.5);
     const playerMat = new THREE.MeshStandardMaterial();
     playerMat.color.setHex(0xf48c06);
     this.playerMesh = new THREE.Mesh(playerGeo, playerMat);
     this.playerMesh.castShadow = true;
     this.playerMesh.receiveShadow = true;
-    this.add(this.playerMesh);
     this.originalScale = this.playerMesh.scale;
+
+    const noseGeo = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+    const noseMat = new THREE.MeshStandardMaterial();
+    noseMat.color.setHex(0xff00000);
+    this.noseMesh = new THREE.Mesh(noseGeo, noseMat);
+
+    this.playerMesh.add(this.noseMesh);
+    this.noseMesh.position.x += 0.3;
+    this.group.add(this.playerMesh);
+    //this.group.add(this.noseMesh);
   }
 
   initializeBody() {

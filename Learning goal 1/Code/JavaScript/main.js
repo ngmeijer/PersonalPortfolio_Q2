@@ -32,7 +32,7 @@ websiteComponents.push(contactMe);
 physicsWorld.gravity.set(0, -12, 0);
 
 let environmentColor = 0x100b13, instructionTextColor = 0x9d0208, platformColor = 0xe85d04;
-let playerPosition = new THREE.Vector3(5, 3, 1);
+let playerPosition = new THREE.Vector3(0, 3, 1);
 
 function createRenderingComponents() {
   camera = new THREE.PerspectiveCamera(
@@ -57,7 +57,7 @@ function createRenderingComponents() {
 function createPlayer() {
   playerInstance = new Player(4, 7, playerPosition);
   physicsWorld.addBody(playerInstance.playerBody);
-  scene.add(playerInstance.playerMesh);
+  scene.add(playerInstance.group);
 
   createMovementInput();
 }
@@ -80,9 +80,11 @@ function createMovementInput() {
   document.addEventListener("keyup", function (event) {
     if (event.key == "a" || event.key == "A") {
       playerInstance.movingLeft = false;
+      playerInstance.hasPlayedLeftAnimation = false;
     }
     if (event.key == "d" || event.key == "D") {
       playerInstance.movingRight = false;
+      playerInstance.hasPlayedRightAnimation = false;
     }
   });
 }
@@ -123,7 +125,6 @@ function dimLighting() {
     .easing(TWEEN.Easing.Quadratic.In) // Use an easing function to make the animation smooth.
     .onUpdate(function () { // Called after tween.js updates 'coords'.
       // Move 'box' to the position described by 'coords' with a CSS translation.
-      console.log(opacityValue);
       fadeImage.style.setProperty("opacity", opacityValue);
     })
     .start(); // Start the tween immediately.

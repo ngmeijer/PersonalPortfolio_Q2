@@ -16,7 +16,7 @@ export default class ContactMe {
 
   initializeArea() {
     this.createContactMeArea();
-    this.createLighting();
+    //this.createLighting();
     this.createText();
   }
 

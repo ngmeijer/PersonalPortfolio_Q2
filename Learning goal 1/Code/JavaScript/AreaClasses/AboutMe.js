@@ -17,7 +17,7 @@ export default class AboutMe extends AreaComponent {
 
   initializeArea() {
     this.createDoor();
-    this.createLighting();
+    //this.createLighting();
     this.creatAboutMeText();
     this.createAboutMeGeometry();
 
