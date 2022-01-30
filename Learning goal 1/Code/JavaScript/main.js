@@ -9,7 +9,7 @@ import ContactMe from "./AreaClasses/ContactMe.js";
 /////////////////
 
 
-const scene = new THREE.Scene();
+const mainScene = new THREE.Scene();
 const physicsWorld = new CANNON.World();
 const fontLoader = new THREE.FontLoader();
 const textureLoader = new THREE.TextureLoader();
@@ -17,10 +17,11 @@ const textureLoader = new THREE.TextureLoader();
 let playerInstance;
 let camera, renderer;
 
-const home = new Home(scene, physicsWorld, fontLoader);
-const portfolio = new Portfolio(scene, physicsWorld, textureLoader, fontLoader);
-const aboutMe = new AboutMe(scene, physicsWorld, textureLoader, fontLoader);
-const contactMe = new ContactMe(scene, physicsWorld, textureLoader, fontLoader);
+const home = new Home(mainScene, physicsWorld, fontLoader);
+const portfolio = new Portfolio(mainScene, physicsWorld, textureLoader, fontLoader);
+const item1Scene = new THREE.Scene();
+const aboutMe = new AboutMe(mainScene, physicsWorld, textureLoader, fontLoader);
+const contactMe = new ContactMe(mainScene, physicsWorld, textureLoader, fontLoader);
 
 let fadeImage = document.getElementById("fadeImage");
 let websiteComponents = [];
@@ -30,6 +31,7 @@ websiteComponents.push(aboutMe);
 websiteComponents.push(contactMe);
 
 physicsWorld.gravity.set(0, -12, 0);
+let activeScene = mainScene;
 
 let environmentColor = 0x100b13, instructionTextColor = 0x9d0208, platformColor = 0xe85d04;
 let playerPosition = new THREE.Vector3(0, 3, 1);
@@ -57,7 +59,7 @@ function createRenderingComponents() {
 function createPlayer() {
   playerInstance = new Player(4, 7, playerPosition);
   physicsWorld.addBody(playerInstance.playerBody);
-  scene.add(playerInstance.group);
+  mainScene.add(playerInstance.group);
 
   createMovementInput();
 }
@@ -96,7 +98,7 @@ function createGeneralGeometry() {
     environmentColor,
     true
   );
-  scene.add(ground.planeMesh);
+  mainScene.add(ground.planeMesh);
   physicsWorld.add(ground.planeBody);
 
   let background = new Plane(
@@ -106,7 +108,7 @@ function createGeneralGeometry() {
     0x100b13,
     false
   );
-  scene.add(background.planeMesh);
+  mainScene.add(background.planeMesh);
 
   let higherGround = new Cube(
     "PortfolioGround",
@@ -115,19 +117,15 @@ function createGeneralGeometry() {
     environmentColor,
     true
   );
-  higherGround.addToScene(scene, physicsWorld);
+  higherGround.addToScene(mainScene, physicsWorld);
 }
 
 function dimLighting() {
-  // position = { x: 0, y: 0 };
-  //var target = { x: 1, y: 0 };
-  //var tween = new TWEEN.Tween(position).to(target, 2000).onUpdate(function () { fadeImage.style.setProperty("opacity", position.x) });
-
   var opacityTemp = { opacity: 0 };
-  var opacityTarget = {opacity: 1 };
-  var tween = new TWEEN.Tween(opacityTemp).to(opacityTarget, 2000).onUpdate(function () { 
-    console.log(opacityTemp);
-    fadeImage.style.setProperty("opacity", opacityTemp.opacity) });
+  var opacityTarget = { opacity: 1 };
+  var tween = new TWEEN.Tween(opacityTemp).to(opacityTarget, 2000).onUpdate(function () {
+    fadeImage.style.setProperty("opacity", opacityTemp.opacity)
+  }).onComplete(function () { activeScene = item1Scene });
   tween.start();
 }
 
@@ -182,7 +180,7 @@ function animate() {
 }
 
 function render() {
-  renderer.render(scene, camera);
+  renderer.render(activeScene, camera);
 }
 initialize();
 animate();
