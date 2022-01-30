@@ -119,15 +119,16 @@ function createGeneralGeometry() {
 }
 
 function dimLighting() {
-  let opacityValue = 0.0;
-  let tweenLightDim = new TWEEN.Tween(opacityValue) // Create a new tween that modifies 'coords'.
-    .to({ opacity: 1.0 }, 1000) // Move to (300, 200) in 1 second.
-    .easing(TWEEN.Easing.Quadratic.In) // Use an easing function to make the animation smooth.
-    .onUpdate(function () { // Called after tween.js updates 'coords'.
-      // Move 'box' to the position described by 'coords' with a CSS translation.
-      fadeImage.style.setProperty("opacity", opacityValue);
-    })
-    .start(); // Start the tween immediately.
+  // position = { x: 0, y: 0 };
+  //var target = { x: 1, y: 0 };
+  //var tween = new TWEEN.Tween(position).to(target, 2000).onUpdate(function () { fadeImage.style.setProperty("opacity", position.x) });
+
+  var opacityTemp = { opacity: 0 };
+  var opacityTarget = {opacity: 1 };
+  var tween = new TWEEN.Tween(opacityTemp).to(opacityTarget, 2000).onUpdate(function () { 
+    console.log(opacityTemp);
+    fadeImage.style.setProperty("opacity", opacityTemp.opacity) });
+  tween.start();
 }
 
 window.addEventListener("resize", onWindowResize, false);

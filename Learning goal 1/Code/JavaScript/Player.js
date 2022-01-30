@@ -32,7 +32,7 @@ export default class Player extends THREE.Object3D {
 
   facingLeft;
   facingRight = true;
-
+  canMove = true;
   group;
 
   constructor(pMoveSpeed, pJumpForce, pPosition) {
@@ -155,6 +155,8 @@ export default class Player extends THREE.Object3D {
   }
 
   moveIntoPortfolioItem() {
+    this.canMove = false;
+
     //Since Tweens cannot get updated during runtime (as far as I've found), I'll have to create a new one every time I have to play the animation
     this.tweenMoveIntoZ = new TWEEN.Tween(this.group.position)
       .to(
@@ -173,6 +175,7 @@ export default class Player extends THREE.Object3D {
   }
 
   handleMovement() {
+    if(!this.canMove) return;
     if (!this.movingLeft && !this.movingRight) {
       this.currentMoveSpeed = 0;
       return;
