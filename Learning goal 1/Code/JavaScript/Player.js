@@ -120,7 +120,10 @@ export default class Player extends THREE.Object3D {
         1000
       )
       .easing(TWEEN.Easing.Quartic.Out);
+  }
 
+  moveIntoPortfolioItem() {
+    //Since Tweens cannot get updated during runtime (as far as I've found), I'll have to create a new one every time I have to play the animation
     this.tweenMoveIntoZ = new TWEEN.Tween(this.playerMesh.position)
       .to(
         {
@@ -133,9 +136,7 @@ export default class Player extends THREE.Object3D {
       .easing(TWEEN.Easing.Quadratic.InOut);
 
     this.tweenRotate.chain(this.tweenMoveIntoZ);
-  }
 
-  moveIntoPortfolioItem() {
     this.tweenRotate.start();
   }
 

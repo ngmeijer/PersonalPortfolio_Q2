@@ -5,23 +5,17 @@
 body {
   margin: 0;
   padding: 0;
+  width:100%;
+  height:100%;
 }
 
-canvas {
-  display: block;
-  position: absolute;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
+#fadeImage{
+  width:100%;
+  height:100%;
+  background:black;
+  opacity: 0;
+  display:block;
+  position:absolute;
+  top:0;
+  left:0;
 }
-
-/* #home-intro {
-  position: absolute;
-  top: 30vh;
-  left: 10vw;
-  z-index: 100;
-  display: block;
-  color: red;
-  font-size: 2.2rem;
-} */

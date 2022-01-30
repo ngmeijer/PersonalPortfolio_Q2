@@ -10,6 +10,7 @@ export default class Home {
   environmentColor = 0x6a040f;
 
   playerInstance;
+  light;
 
   constructor(pScene, pPhysicsWorld, pFontLoader) {
     this.scene = pScene;

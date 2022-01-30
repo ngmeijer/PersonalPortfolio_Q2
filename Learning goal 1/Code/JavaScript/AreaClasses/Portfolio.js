@@ -14,6 +14,7 @@ export default class Portfolio {
   environmentColor;
 
   portfolioItems = [];
+  light;
 
   constructor(pScene, pPhysicsWorld, pTextureLoader, pFontloader) {
     this.scene = pScene;

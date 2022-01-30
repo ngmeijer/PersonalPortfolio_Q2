@@ -22,6 +22,7 @@ const portfolio = new Portfolio(scene, physicsWorld, textureLoader, fontLoader);
 const aboutMe = new AboutMe(scene, physicsWorld, textureLoader, fontLoader);
 const contactMe = new ContactMe(scene, physicsWorld, textureLoader, fontLoader);
 
+let fadeImage = document.getElementById("fadeImage");
 let websiteComponents = [];
 websiteComponents.push(home);
 websiteComponents.push(portfolio);
@@ -31,10 +32,7 @@ websiteComponents.push(contactMe);
 physicsWorld.gravity.set(0, -12, 0);
 
 let environmentColor = 0x100b13, instructionTextColor = 0x9d0208, platformColor = 0xe85d04;
-let playerPosition = new THREE.Vector3(0,3,1);
-let levelLights = [];
-
-const lightDim = new TWEEN.Tween();
+let playerPosition = new THREE.Vector3(5, 3, 1);
 
 function createRenderingComponents() {
   camera = new THREE.PerspectiveCamera(
@@ -74,7 +72,7 @@ function createMovementInput() {
     if (event.key == " ") {
       playerInstance.handleJump();
     }
-    if(event.key == "f" || event.key == "F"){
+    if (event.key == "f" || event.key == "F") {
       playerInstance.moveIntoPortfolioItem();
       dimLighting();
     }
@@ -118,10 +116,17 @@ function createGeneralGeometry() {
   higherGround.addToScene(scene, physicsWorld);
 }
 
-function dimLighting(){
-  for(let i = 0; i < levelLights.length; i++){
-    //levelLights[i].distance = 10;
-  }
+function dimLighting() {
+  let opacityValue = 0.0;
+  let tweenLightDim = new TWEEN.Tween(opacityValue) // Create a new tween that modifies 'coords'.
+    .to({ opacity: 1.0 }, 1000) // Move to (300, 200) in 1 second.
+    .easing(TWEEN.Easing.Quadratic.In) // Use an easing function to make the animation smooth.
+    .onUpdate(function () { // Called after tween.js updates 'coords'.
+      // Move 'box' to the position described by 'coords' with a CSS translation.
+      console.log(opacityValue);
+      fadeImage.style.setProperty("opacity", opacityValue);
+    })
+    .start(); // Start the tween immediately.
 }
 
 window.addEventListener("resize", onWindowResize, false);
@@ -152,7 +157,6 @@ function initialize() {
     websiteComponents[i].playerInstance = playerInstance;
 
     websiteComponents[i].initializeArea();
-    levelLights.push(websiteComponents[i].lightComp);
   }
 }
 
