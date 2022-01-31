@@ -1,4 +1,5 @@
 import Cube from "../Cube.js";
+import Text from "../Text.js";
 import AreaComponent from "./AreaComponent.js";
 import Door from "./Door.js";
 
@@ -21,15 +22,15 @@ export default class AboutMe extends AreaComponent {
     this.creatAboutMeText();
     this.createAboutMeGeometry();
 
-    if(this.door == null) this.canUpdate = false;
+    if (this.door == null) this.canUpdate = false;
   }
 
   update() {
-    if(this.canUpdate == false) return;
+    if (this.canUpdate == false) return;
 
     this.checkPlayerDistance();
 
-    for(let i = 0; i < this.moveableObjects.length; i++){
+    for (let i = 0; i < this.moveableObjects.length; i++) {
       this.moveableObjects[i].update();
     }
   }
@@ -112,10 +113,32 @@ export default class AboutMe extends AreaComponent {
         ]);
 
         titleMesh.position.x = 37;
-        titleMesh.position.y = 9;
+        titleMesh.position.y = 12;
         titleMesh.position.z = -6.5;
         titleMesh.castShadow = true;
         scene.add(titleMesh);
+
+        let textContent =
+          "Lorem ipsum dolor sit amet, " +
+          "\nconsectetur adipiscing elit," +
+          "\nsed do eiusmod tempor incididunt" +
+          "\nut labore et dolore magna aliqua. " +
+          "\nUt enim ad minim veniam, quis nostrud" +
+          "\nexercitation ullamco laboris nisi ut aliquip" +
+          "\nex ea commodo consequat. Duis aute irure dolor in" +
+          "\nreprehenderit in voluptate velit esse cillum dolore" +
+          "\neu fugiat nulla pariatur. Excepteur sint" +
+          "\noccaecat cupidatat non proident, sunt in culpa qui" +
+          "\nofficia deserunt mollit anim id est laborum";
+
+        const informationText = new Text(
+          textContent,
+          font,
+          0.3,
+          textCol,
+          new THREE.Vector3(37.5, 11, -6)
+        );
+        scene.add(informationText.mesh);
       }
     );
   }

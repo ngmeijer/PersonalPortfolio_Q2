@@ -1,4 +1,5 @@
 import Cube from "../Cube.js";
+import Text from "../Text.js";
 
 export default class Home {
   scene;
@@ -87,20 +88,22 @@ export default class Home {
         titleMesh.castShadow = true;
         scene.add(titleMesh);
 
-        const hintGeo = new THREE.TextGeometry(
-          "Press A/D to move!\nPress space to jump",
-          { font: font, size: 0.4, height: 0.01 }
-        );
-        const hintMesh = new THREE.Mesh(hintGeo, [
-          new THREE.MeshPhongMaterial({ color: textCol }),
-          new THREE.MeshPhongMaterial({ color: textCol }),
-        ]);
+        // const hintGeo = new THREE.TextGeometry(
+        //   "Press A/D to move!\nPress space to jump",
+        //   { font: font, size: 0.4, height: 0.01 }
+        // );
+        // const hintMesh = new THREE.Mesh(hintGeo, [
+        //   new THREE.MeshPhongMaterial({ color: textCol }),
+        //   new THREE.MeshPhongMaterial({ color: textCol }),
+        // ]);
 
-        hintMesh.position.x = -7;
-        hintMesh.position.y = 1;
-        hintMesh.position.z = -6;
-        hintMesh.castShadow = true;
-        scene.add(hintMesh);
+        // hintMesh.position.x = -7;
+        // hintMesh.position.y = 1;
+        // hintMesh.position.z = -6;
+        // hintMesh.castShadow = true;
+        const hintText = new Text("Press A/D to move!\nPress space to jump",font, 0.4, textCol, new THREE.Vector3(-7, 1, -6));
+
+        scene.add(hintText.mesh);
       }
     );
   }

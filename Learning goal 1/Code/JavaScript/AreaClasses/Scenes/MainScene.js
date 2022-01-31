@@ -22,7 +22,7 @@ export default class MainScene extends THREE.Scene {
   textureLoader;
 
   playerInstance;
-  playerPosition = new THREE.Vector3(0, 3, 1);
+  playerPosition = new THREE.Vector3(38, 8, 1);
 
   instructionTextColor;
   platformColor;
