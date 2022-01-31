@@ -46,6 +46,8 @@ export default class Door extends THREE.Object3D {
       .easing(TWEEN.Easing.Quadratic.In)
       .start();
 
+      console.log("opening door");
+
     this.isOpen = true;
   }
 

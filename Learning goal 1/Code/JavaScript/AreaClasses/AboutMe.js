@@ -17,7 +17,7 @@ export default class AboutMe extends AreaComponent {
 
   initializeArea() {
     this.createDoor();
-    //this.createLighting();
+    this.createLighting();
     this.creatAboutMeText();
     this.createAboutMeGeometry();
 
@@ -27,7 +27,7 @@ export default class AboutMe extends AreaComponent {
   update() {
     if(this.canUpdate == false) return;
 
-    //this.checkPlayerDistance();
+    this.checkPlayerDistance();
 
     for(let i = 0; i < this.moveableObjects.length; i++){
       this.moveableObjects[i].update();

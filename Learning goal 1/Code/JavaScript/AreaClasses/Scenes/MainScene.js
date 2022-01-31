@@ -37,6 +37,7 @@ export default class MainScene extends THREE.Scene {
   initalizeScene() {
     this.physicsWorld = new CANNON.World();
     this.physicsWorld.gravity.set(0, -12, 0);
+    this.physicsWorld.solver.iterations = 20;
     this.createGeneralGeometry();
 
     this.homeArea = new Home(this, this.physicsWorld, this.fontLoader);
@@ -104,9 +105,6 @@ export default class MainScene extends THREE.Scene {
       }
       if (event.key == " ") {
         pPlayer.handleJump();
-      }
-      if (event.key == "f" || event.key == "F") {
-        pPlayer.moveIntoPortfolioItem();
       }
     });
     document.addEventListener("keyup", function (event) {

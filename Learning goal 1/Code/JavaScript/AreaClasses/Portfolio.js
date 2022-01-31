@@ -18,6 +18,9 @@ export default class Portfolio {
   itemPhysicsWorlds = [];
   light;
 
+  canEnterItem;
+  nearestItemName;
+
   constructor(pScene, pPhysicsWorld, pTextureLoader, pFontloader) {
     this.mainScene = pScene;
     this.physicsWorld = pPhysicsWorld;
@@ -25,22 +28,21 @@ export default class Portfolio {
     this.fontLoader = pFontloader;
   }
 
-  overrideColours(){
-    
-  }
+  overrideColours() {}
 
-  initializeArea(){
+  initializeArea() {
     this.createPortfolioGeometry();
     this.createPortfolioText();
     this.createPortfolioItems();
     this.createLighting();
-
-    //this.itemScenes[0].add(this.playerInstance.group);
   }
 
-  update(){
-    for(let i = 0; i < this.portfolioItems.length; i++){
-      //this.portfolioItems[i].checkPlayerOnPlatform();
+  update() {
+    for (let i = 0; i < this.portfolioItems.length; i++) {
+      if (this.portfolioItems[i].checkPlayerOnPlatform()){
+        this.canEnterItem = true;
+      }
+      //else this.canEnterItem = false;
     }
   }
 
@@ -92,10 +94,11 @@ export default class Portfolio {
         hintMesh.castShadow = true;
         scene.add(hintMesh);
 
-        const titleGeo = new THREE.TextGeometry(
-          "Portfolio",
-          { font: font, size: 0.7, height: 0.01 }
-        );
+        const titleGeo = new THREE.TextGeometry("Portfolio", {
+          font: font,
+          size: 0.7,
+          height: 0.01,
+        });
         const titleMesh = new THREE.Mesh(titleGeo, [
           new THREE.MeshPhongMaterial({ color: textCol }),
           new THREE.MeshPhongMaterial({ color: textCol }),
@@ -142,7 +145,7 @@ export default class Portfolio {
       new THREE.Vector3(3.9, 2.2),
       new THREE.Vector3(25, 6.5, 0),
       textCol,
-      platformCol,
+      platformCol
     );
 
     this.fontLoader.load(
