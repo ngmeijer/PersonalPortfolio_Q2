@@ -160,10 +160,10 @@ export default class PortfolioItem extends THREE.Object3D {
   }
 
   checkPlayerOnPlatform(){
-    let playerDistance = this.playerInstance.pos.distanceTo(
+    let playerDistance = this.playerInstance.currentPos.distanceTo(
       this.itemPosition
     );
-    if(playerDistance < 1.3 && this.playerInstance.pos.y >= this.platform.position.y){
+    if(playerDistance < 1.3 && this.playerInstance.currentPos.y >= this.platform.position.y){
       this.playerOnPlatform = true;
     } else this.playerOnPlatform = false;
   }

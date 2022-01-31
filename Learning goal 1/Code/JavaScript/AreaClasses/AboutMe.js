@@ -27,7 +27,7 @@ export default class AboutMe extends AreaComponent {
   update() {
     if(this.canUpdate == false) return;
 
-    this.checkPlayerDistance();
+    //this.checkPlayerDistance();
 
     for(let i = 0; i < this.moveableObjects.length; i++){
       this.moveableObjects[i].update();
@@ -35,7 +35,7 @@ export default class AboutMe extends AreaComponent {
   }
 
   checkPlayerDistance() {
-    let distanceToDoor = this.playerInstance.pos.distanceTo(
+    let distanceToDoor = this.playerInstance.currentPos.distanceTo(
       this.door.pos
     );
 

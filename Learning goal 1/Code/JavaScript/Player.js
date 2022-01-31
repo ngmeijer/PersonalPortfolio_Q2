@@ -2,13 +2,15 @@ export default class Player extends THREE.Object3D {
   playerMesh;
   playerBody;
   noseMesh;
-  pos;
+  currentPos;
+  startPos;
+  startRot;
   defaultMoveSpeed;
-  currentMoveSpeed;
+  currentMoveSpeed = 0;
   jumpForce;
   isJumping;
-  movingLeft;
-  movingRight;
+  movingLeft = false;
+  movingRight = false;
   velocity;
   canMove = true;
   delta;
@@ -20,9 +22,11 @@ export default class Player extends THREE.Object3D {
   tweenJumpIn;
   tweenJumpOut;
   tweenRotate;
+  tweenResetRotate;
   tweenMoveLeft;
   tweenMoveRight;
   tweenMoveIntoZ;
+  tweenMoveOutZ;
   originalScale;
   currentScale;
 
@@ -38,15 +42,14 @@ export default class Player extends THREE.Object3D {
   constructor(pMoveSpeed, pJumpForce, pPosition) {
     super();
     this.defaultMoveSpeed = pMoveSpeed;
-    this.pos = pPosition;
+    this.currentPos = pPosition;
+    this.startPos = pPosition;
 
     this.initializeGFX();
     this.initializeBody();
 
-    this.currentMoveSpeed = 0;
+    this.startRot = this.group.rotation;
     this.jumpForce = pJumpForce;
-    this.movingLeft = false;
-    this.movingRight = false;
 
     this.prepareTweens();
   }
@@ -63,61 +66,31 @@ export default class Player extends THREE.Object3D {
       this.playerBody.position.y,
       this.playerBody.position.z
     );
-    // this.group.quaternion.set(
-    //   this.playerBody.quaternion.x,
-    //   this.playerBody.quaternion.y,
-    //   this.playerBody.quaternion.z,
-    //   this.playerBody.quaternion.w
-    // );
 
-    this.pos = this.playerBody.position;
+    this.currentPos = this.playerBody.position;
     this.playerBody.velocity = this.velocity;
   }
 
+  resetPlayer() {
+    this.playerBody.position.x = this.startPos.x;
+    this.playerBody.position.y = this.startPos.y;
+    this.playerBody.position.z = this.startPos.z - 2;
+    this.tweenFaceCamera.start();
+
+    this.canMove = true;
+  }
+
   prepareTweens() {
-    this.tweenScaleIn = new TWEEN.Tween(this.playerMesh.scale)
+    this.tweenFaceCamera = new TWEEN.Tween(this.group.rotation)
       .to(
         {
-          x: this.originalScale.x - this.originalScale.x * 0.4,
-          y: this.originalScale.y,
-          z: this.originalScale.z,
+          x: this.group.rotation.x,
+          y: this.group.rotation.y - this.movingInRotation,
+          z: this.group.rotation.z,
         },
-        150
+        1500
       )
-      .easing(TWEEN.Easing.Exponential.In);
-
-    this.tweenScaleOut = new TWEEN.Tween(this.playerMesh.scale)
-      .to(
-        {
-          x: this.originalScale.x,
-          y: this.originalScale.y,
-          z: this.originalScale.z,
-        },
-        1000
-      )
-      .easing(TWEEN.Easing.Elastic.Out);
-
-    this.tweenJumpIn = new TWEEN.Tween(this.playerMesh.scale)
-      .to(
-        {
-          x: 1,
-          y: 2,
-          z: 1,
-        },
-        250
-      )
-      .easing(TWEEN.Easing.Cubic.In);
-
-    this.tweenJumpOut = new TWEEN.Tween(this.playerMesh.scale)
-      .to(
-        {
-          x: this.playerMesh.scale.x,
-          y: this.playerMesh.scale.y,
-          z: this.playerMesh.scale.z,
-        },
-        250
-      )
-      .easing(TWEEN.Easing.Cubic.In);
+      .easing(TWEEN.Easing.Quartic.Out);
 
     this.tweenRotate = new TWEEN.Tween(this.group.rotation)
       .to(
@@ -130,7 +103,7 @@ export default class Player extends THREE.Object3D {
       )
       .easing(TWEEN.Easing.Quartic.Out);
 
-    this.tweenMoveLeft = new TWEEN.Tween(this.group.rotation, this.playerBody.rotation)
+    this.tweenMoveLeft = new TWEEN.Tween(this.group.rotation)
       .to(
         {
           x: this.group.rotation.x,
@@ -139,7 +112,7 @@ export default class Player extends THREE.Object3D {
         },
         500
       )
-      .easing(TWEEN.Easing.Quartic.Out)
+      .easing(TWEEN.Easing.Quartic.Out);
 
     this.tweenMoveRight = new TWEEN.Tween(this.group.rotation)
       .to(
@@ -151,7 +124,6 @@ export default class Player extends THREE.Object3D {
         500
       )
       .easing(TWEEN.Easing.Quartic.Out);
-
   }
 
   moveIntoPortfolioItem() {
@@ -170,12 +142,11 @@ export default class Player extends THREE.Object3D {
       .easing(TWEEN.Easing.Quadratic.InOut);
 
     this.tweenRotate.chain(this.tweenMoveIntoZ);
-
     this.tweenRotate.start();
   }
 
   handleMovement() {
-    if(!this.canMove) return;
+    if (!this.canMove) return;
     if (!this.movingLeft && !this.movingRight) {
       this.currentMoveSpeed = 0;
       return;
@@ -227,16 +198,15 @@ export default class Player extends THREE.Object3D {
     this.playerMesh.add(this.noseMesh);
     this.noseMesh.position.x += 0.3;
     this.group.add(this.playerMesh);
-    //this.group.add(this.noseMesh);
   }
 
   initializeBody() {
     const playerShape = new CANNON.Box(new CANNON.Vec3(0.25, 0.5, 0.5));
     this.playerBody = new CANNON.Body({ mass: 1 });
     this.playerBody.addShape(playerShape);
-    this.playerBody.position.x = this.pos.x;
-    this.playerBody.position.y = this.pos.y;
-    this.playerBody.position.z = this.pos.z;
+    this.playerBody.position.x = this.currentPos.x;
+    this.playerBody.position.y = this.currentPos.y;
+    this.playerBody.position.z = this.currentPos.z;
     this.playerBody.restitution = 0;
   }
 }

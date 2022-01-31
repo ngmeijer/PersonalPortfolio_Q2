@@ -1,40 +1,29 @@
-import Cube from "./Cube.js";
-import Plane from "./Plane.js";
-import Player from "./Player.js";
+import MainScene from "./AreaClasses/Scenes/MainScene.js";
 
-import Home from "./AreaClasses/Home.js";
-import Portfolio from "./AreaClasses/Portfolio.js";
-import AboutMe from "./AreaClasses/AboutMe.js";
-import ContactMe from "./AreaClasses/ContactMe.js";
-/////////////////
-
-
-const mainScene = new THREE.Scene();
-const physicsWorld = new CANNON.World();
 const fontLoader = new THREE.FontLoader();
 const textureLoader = new THREE.TextureLoader();
+const mainScene = new MainScene(fontLoader, textureLoader);
 
 let playerInstance;
 let camera, renderer;
 
-const home = new Home(mainScene, physicsWorld, fontLoader);
-const portfolio = new Portfolio(mainScene, physicsWorld, textureLoader, fontLoader);
-const item1Scene = new THREE.Scene();
-const aboutMe = new AboutMe(mainScene, physicsWorld, textureLoader, fontLoader);
-const contactMe = new ContactMe(mainScene, physicsWorld, textureLoader, fontLoader);
-
 let fadeImage = document.getElementById("fadeImage");
-let websiteComponents = [];
-websiteComponents.push(home);
-websiteComponents.push(portfolio);
-websiteComponents.push(aboutMe);
-websiteComponents.push(contactMe);
 
-physicsWorld.gravity.set(0, -12, 0);
 let activeScene = mainScene;
+let activePhysicsWorld;
 
-let environmentColor = 0x100b13, instructionTextColor = 0x9d0208, platformColor = 0xe85d04;
-let playerPosition = new THREE.Vector3(0, 3, 1);
+let environmentColor = 0x100b13,
+  instructionTextColor = 0x9d0208,
+  platformColor = 0xe85d04;
+mainScene.environmentColor = environmentColor;
+mainScene.instructionTextColor = instructionTextColor;
+mainScene.platformColor = platformColor;
+
+document.addEventListener("keydown", function (event) {
+  if (event.key == "f" || event.key == "F") {
+    dimLighting();
+  }
+});
 
 function createRenderingComponents() {
   camera = new THREE.PerspectiveCamera(
@@ -56,77 +45,31 @@ function createRenderingComponents() {
   renderer.antialias = true;
   document.body.appendChild(renderer.domElement);
 }
-function createPlayer() {
-  playerInstance = new Player(4, 7, playerPosition);
-  physicsWorld.addBody(playerInstance.playerBody);
-  mainScene.add(playerInstance.group);
-
-  createMovementInput();
-}
-function createMovementInput() {
-  document.addEventListener("keydown", function (event) {
-    if (event.key == "a" || event.key == "A") {
-      playerInstance.movingLeft = true;
-    }
-    if (event.key == "d" || event.key == "D") {
-      playerInstance.movingRight = true;
-    }
-    if (event.key == " ") {
-      playerInstance.handleJump();
-    }
-    if (event.key == "f" || event.key == "F") {
-      playerInstance.moveIntoPortfolioItem();
-      dimLighting();
-    }
-  });
-  document.addEventListener("keyup", function (event) {
-    if (event.key == "a" || event.key == "A") {
-      playerInstance.movingLeft = false;
-      playerInstance.hasPlayedLeftAnimation = false;
-    }
-    if (event.key == "d" || event.key == "D") {
-      playerInstance.movingRight = false;
-      playerInstance.hasPlayedRightAnimation = false;
-    }
-  });
-}
-function createGeneralGeometry() {
-  let ground = new Plane(
-    new THREE.Vector2(40, 50),
-    new THREE.Vector3(0, 0, 0),
-    new THREE.Vector3(-90, 0, 0),
-    environmentColor,
-    true
-  );
-  mainScene.add(ground.planeMesh);
-  physicsWorld.add(ground.planeBody);
-
-  let background = new Plane(
-    new THREE.Vector2(120, 25),
-    new THREE.Vector3(0, 0, -25),
-    new THREE.Vector3(0, 0, 0),
-    0x100b13,
-    false
-  );
-  mainScene.add(background.planeMesh);
-
-  let higherGround = new Cube(
-    "PortfolioGround",
-    new THREE.Vector3(120, 3, 15),
-    new THREE.Vector3(68, 1, 0),
-    environmentColor,
-    true
-  );
-  higherGround.addToScene(mainScene, physicsWorld);
-}
 
 function dimLighting() {
-  var opacityTemp = { opacity: 0 };
-  var opacityTarget = { opacity: 1 };
-  var tween = new TWEEN.Tween(opacityTemp).to(opacityTarget, 2000).onUpdate(function () {
-    fadeImage.style.setProperty("opacity", opacityTemp.opacity)
-  }).onComplete(function () { activeScene = item1Scene });
-  tween.start();
+  var currentOpacity = { opacity: 0 };
+  var fullOpacity = { opacity: 1 };
+  var noOpacity = { opacity: 0 };
+  var fadeOut = new TWEEN.Tween(currentOpacity)
+    .to(fullOpacity, 2000)
+    .onUpdate(function () {
+      fadeImage.style.setProperty("opacity", currentOpacity.opacity);
+    })
+    .onComplete(function () {
+      // activeScene = item1Scene;
+      activePhysicsWorld = mainScene.mainPhysicsWorld;
+      mainScene.playerInstance.resetPlayer();
+    });
+
+  var fadeIn = new TWEEN.Tween(currentOpacity)
+    .to(noOpacity, 2000)
+    .onUpdate(function () {
+      fadeImage.style.setProperty("opacity", currentOpacity.opacity);
+    });
+
+    fadeOut.chain(fadeIn);
+
+  fadeOut.start();
 }
 
 window.addEventListener("resize", onWindowResize, false);
@@ -139,25 +82,31 @@ function onWindowResize() {
 
 let cameraOffset = new THREE.Vector3(1.5, 2, 0);
 function cameraFollowPlayer() {
-  camera.position.x = playerInstance.playerBody.position.x + cameraOffset.x;
-  camera.position.y = playerInstance.playerBody.position.y + cameraOffset.y;
+  camera.position.x =
+    mainScene.playerInstance.playerBody.position.x + cameraOffset.x;
+  camera.position.y =
+    mainScene.playerInstance.playerBody.position.y + cameraOffset.y;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 function initialize() {
   createRenderingComponents();
-
-  createPlayer();
-  createGeneralGeometry();
-
-  for (let i = 0; i < websiteComponents.length; i++) {
-    websiteComponents[i].instructionTextColor = instructionTextColor;
-    websiteComponents[i].platformColor = platformColor;
-    websiteComponents[i].environmentColor = environmentColor;
-
-    websiteComponents[i].playerInstance = playerInstance;
-
-    websiteComponents[i].initializeArea();
-  }
+  mainScene.environmentColor = environmentColor;
+  mainScene.instructionTextColor = instructionTextColor;
+  mainScene.platformColor = platformColor;
+  mainScene.initalizeScene();
+  activePhysicsWorld = mainScene.mainPhysicsWorld;
 }
 
 const frameClock = new THREE.Clock();
@@ -166,11 +115,11 @@ function animate() {
   requestAnimationFrame(animate);
 
   delta = Math.min(frameClock.getDelta(), 0.1);
-  physicsWorld.step(delta);
+  activePhysicsWorld.step(delta);
 
-  playerInstance.update(delta);
-  for (let i = 0; i < websiteComponents.length; i++) {
-    websiteComponents[i].update();
+  mainScene.playerInstance.update(delta);
+  for (let i = 0; i < mainScene.websiteComponents.length; i++) {
+    mainScene.websiteComponents[i].update();
   }
 
   cameraFollowPlayer();

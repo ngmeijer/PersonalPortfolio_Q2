@@ -2,7 +2,7 @@ import Cube from "../Cube.js";
 import PortfolioItem from "../PortfolioItem.js";
 
 export default class Portfolio {
-  scene;
+  mainScene;
   physicsWorld;
   textureLoader;
   fontLoader;
@@ -14,10 +14,12 @@ export default class Portfolio {
   environmentColor;
 
   portfolioItems = [];
+  itemScenes = [];
+  itemPhysicsWorlds = [];
   light;
 
   constructor(pScene, pPhysicsWorld, pTextureLoader, pFontloader) {
-    this.scene = pScene;
+    this.mainScene = pScene;
     this.physicsWorld = pPhysicsWorld;
     this.textureLoader = pTextureLoader;
     this.fontLoader = pFontloader;
@@ -36,7 +38,7 @@ export default class Portfolio {
 
   update(){
     for(let i = 0; i < this.portfolioItems.length; i++){
-      this.portfolioItems[i].checkPlayerOnPlatform();
+      //this.portfolioItems[i].checkPlayerOnPlatform();
     }
   }
 
@@ -50,7 +52,7 @@ export default class Portfolio {
       0
     );
 
-    background.addToScene(this.scene, this.physicsWorld);
+    background.addToScene(this.mainScene, this.physicsWorld);
 
     let backgroundLeft = new Cube(
       "Portfolio_BackgroundLeft",
@@ -61,11 +63,11 @@ export default class Portfolio {
       0
     );
 
-    backgroundLeft.addToScene(this.scene, this.physicsWorld);
+    backgroundLeft.addToScene(this.mainScene, this.physicsWorld);
   }
 
   createPortfolioText() {
-    let scene = this.scene;
+    let scene = this.mainScene;
     let textCol = this.instructionTextColor;
     let textMesh;
 
@@ -151,17 +153,17 @@ export default class Portfolio {
     );
 
     TWDE_Item.createImage(textureLoader);
-    TWDE_Item.addToScene(this.scene, this.physicsWorld);
+    TWDE_Item.addToScene(this.mainScene, this.physicsWorld);
     TWDE_Item.playerInstance = this.playerInstance;
     this.portfolioItems.push(TWDE_Item);
 
     TWDE_Item2.createImage(textureLoader);
-    TWDE_Item2.addToScene(this.scene, this.physicsWorld);
+    TWDE_Item2.addToScene(this.mainScene, this.physicsWorld);
     TWDE_Item2.playerInstance = this.playerInstance;
     this.portfolioItems.push(TWDE_Item2);
 
     TWDE_Item3.createImage(textureLoader);
-    TWDE_Item3.addToScene(this.scene, this.physicsWorld);
+    TWDE_Item3.addToScene(this.mainScene, this.physicsWorld);
     TWDE_Item3.playerInstance = this.playerInstance;
     this.portfolioItems.push(TWDE_Item3);
   }
@@ -170,6 +172,6 @@ export default class Portfolio {
     this.light = new THREE.PointLight(0xffba08, 4, 40);
     this.light.position.set(25, 12, 10);
     this.light.castShadow = true;
-    this.scene.add(this.light);
+    this.mainScene.add(this.light);
   }
 }
