@@ -34,6 +34,8 @@ export default class Portfolio {
     this.createPortfolioText();
     this.createPortfolioItems();
     this.createLighting();
+
+    //this.itemScenes[0].add(this.playerInstance.group);
   }
 
   update(){

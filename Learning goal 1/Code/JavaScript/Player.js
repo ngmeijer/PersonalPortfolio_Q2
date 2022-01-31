@@ -21,7 +21,7 @@ export default class Player extends THREE.Object3D {
   tweenScaleOut;
   tweenJumpIn;
   tweenJumpOut;
-  tweenRotate;
+  tweenRotateClock90;
   tweenResetRotate;
   tweenMoveLeft;
   tweenMoveRight;
@@ -47,6 +47,7 @@ export default class Player extends THREE.Object3D {
 
     this.initializeGFX();
     this.initializeBody();
+    this.velocity = this.playerBody.velocity;
 
     this.startRot = this.group.rotation;
     this.jumpForce = pJumpForce;
@@ -75,6 +76,9 @@ export default class Player extends THREE.Object3D {
     this.playerBody.position.x = this.startPos.x;
     this.playerBody.position.y = this.startPos.y;
     this.playerBody.position.z = this.startPos.z - 2;
+
+    this.tweenFaceCamera.chain(this.tweenMoveOutZ);
+    this.tweenMoveOutZ.chain(this.tweenRotateCounter90);
     this.tweenFaceCamera.start();
 
     this.canMove = true;
@@ -92,7 +96,7 @@ export default class Player extends THREE.Object3D {
       )
       .easing(TWEEN.Easing.Quartic.Out);
 
-    this.tweenRotate = new TWEEN.Tween(this.group.rotation)
+    this.tweenRotateClock90 = new TWEEN.Tween(this.group.rotation)
       .to(
         {
           x: this.group.rotation.x,
@@ -130,19 +134,43 @@ export default class Player extends THREE.Object3D {
     this.canMove = false;
 
     //Since Tweens cannot get updated during runtime (as far as I've found), I'll have to create a new one every time I have to play the animation
-    this.tweenMoveIntoZ = new TWEEN.Tween(this.group.position)
+    this.tweenMoveIntoZ = new TWEEN.Tween(this.playerBody.position)
       .to(
         {
-          x: this.group.position.x,
-          y: this.group.position.y,
-          z: this.group.position.z - 2,
+          x: this.playerBody.position.x,
+          y: this.playerBody.position.y,
+          z: this.playerBody.position.z - 2,
         },
         1000
       )
       .easing(TWEEN.Easing.Quadratic.InOut);
 
-    this.tweenRotate.chain(this.tweenMoveIntoZ);
-    this.tweenRotate.start();
+      console.log(this.playerBody.position.y)
+      this.tweenMoveOutZ = new TWEEN.Tween(this.playerBody.position)
+      .to(
+        {
+          x: this.playerBody.position.x,
+          y: 0.5,
+          z: this.playerBody.position.z,
+        },
+        1000
+      )
+      .easing(TWEEN.Easing.Quadratic.InOut);
+
+      this.tweenRotateCounter90 = new TWEEN.Tween(this.group.rotation)
+      .to(
+        {
+          x: this.group.rotation.x,
+          y: 0,
+          z: this.group.rotation.z,
+        },
+        1000
+      )
+      .easing(TWEEN.Easing.Quartic.Out);
+
+    this.tweenRotateClock90.chain(this.tweenMoveIntoZ);
+    //this.tweenMoveIntoZ.chain(this.tweenRotateCounter90);
+    this.tweenRotateClock90.start();
   }
 
   handleMovement() {

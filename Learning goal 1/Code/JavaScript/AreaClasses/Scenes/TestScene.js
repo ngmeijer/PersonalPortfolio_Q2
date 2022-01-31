@@ -8,7 +8,7 @@ import Cube from "../../Cube.js";
 
 import Player from "../../Player.js";
 
-export default class MainScene extends THREE.Scene {
+export default class TestScene extends THREE.Scene {
   light;
 
   homeArea;
@@ -22,7 +22,7 @@ export default class MainScene extends THREE.Scene {
   textureLoader;
 
   playerInstance;
-  playerPosition = new THREE.Vector3(0, 3, 1);
+  playerPosition = new THREE.Vector3(0, 0.5, 1);
 
   instructionTextColor;
   platformColor;
@@ -36,35 +36,14 @@ export default class MainScene extends THREE.Scene {
 
   initalizeScene() {
     this.physicsWorld = new CANNON.World();
-    this.physicsWorld.gravity.set(0, -12, 0);
     this.createGeneralGeometry();
+    this.physicsWorld.gravity.set(0, -12, 0);
 
     this.homeArea = new Home(this, this.physicsWorld, this.fontLoader);
-    this.portfolioArea = new Portfolio(
-      this,
-      this.physicsWorld,
-      this.textureLoader,
-      this.fontLoader
-    );
-    this.aboutMeArea = new AboutMe(
-      this,
-      this.physicsWorld,
-      this.textureLoader,
-      this.fontLoader
-    );
-    this.contactMeArea = new ContactMe(
-      this,
-      this.physicsWorld,
-      this.textureLoader,
-      this.fontLoader
-    );
-
-    this.websiteComponents.push(this.homeArea);
-    this.websiteComponents.push(this.portfolioArea);
-    this.websiteComponents.push(this.aboutMeArea);
-    this.websiteComponents.push(this.contactMeArea);
 
     this.createPlayer();
+
+    this.websiteComponents.push(this.homeArea);
 
     for (let i = 0; i < this.websiteComponents.length; i++) {
       this.websiteComponents[i].instructionTextColor =
@@ -87,6 +66,7 @@ export default class MainScene extends THREE.Scene {
   }
 
   createPlayer() {
+      console.log(this.playerPosition);
     this.playerInstance = new Player(4, 7, this.playerPosition);
     this.physicsWorld.addBody(this.playerInstance.playerBody);
     this.add(this.playerInstance.group);
