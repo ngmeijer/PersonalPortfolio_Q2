@@ -1,4 +1,4 @@
-import Cube from "../Cube.js";
+import Cube from "../CustomGeometry/Cube.js";
 import PortfolioItem from "../PortfolioItem.js";
 
 export default class Portfolio {
@@ -38,30 +38,30 @@ export default class Portfolio {
   }
 
   update() {
+    this.canEnterItem = false;
     for (let i = 0; i < this.portfolioItems.length; i++) {
       if (this.portfolioItems[i].checkPlayerOnPlatform()){
         this.canEnterItem = true;
       }
-      //else this.canEnterItem = false;
     }
   }
 
   createPortfolioGeometry() {
-    let background = new Cube(
-      "Portfolio_Background",
-      new THREE.Vector3(26, 20, 10),
-      new THREE.Vector3(20, 1, -8),
+    let ground = new Cube(
+      "Portfolio_Ground",
+      new THREE.Vector3(50, 1, 30),
+      new THREE.Vector3(31, -1.5, -10),
       this.environmentColor,
       true,
       0
     );
 
-    background.addToScene(this.mainScene, this.physicsWorld);
+    ground.addToScene(this.mainScene, this.physicsWorld);
 
     let backgroundLeft = new Cube(
       "Portfolio_BackgroundLeft",
-      new THREE.Vector3(1, 20, 10),
-      new THREE.Vector3(7.5, 1, -6.5),
+      new THREE.Vector3(1, 20, 30),
+      new THREE.Vector3(6.5, -0.5, -16),
       this.environmentColor,
       true,
       0
@@ -79,21 +79,6 @@ export default class Portfolio {
       "../Fonts/El_Messiri_SemiBold_Regular.json",
 
       function (font) {
-        const hintGeo = new THREE.TextGeometry(
-          "Try climbing up the platforms!",
-          { font: font, size: 0.4, height: 0.01 }
-        );
-        const hintMesh = new THREE.Mesh(hintGeo, [
-          new THREE.MeshPhongMaterial({ color: textCol }),
-          new THREE.MeshPhongMaterial({ color: textCol }),
-        ]);
-
-        hintMesh.position.x = 8.5;
-        hintMesh.position.y = 3.3;
-        hintMesh.position.z = -1.5;
-        hintMesh.castShadow = true;
-        scene.add(hintMesh);
-
         const titleGeo = new THREE.TextGeometry("Portfolio", {
           font: font,
           size: 0.7,
@@ -105,7 +90,7 @@ export default class Portfolio {
         ]);
 
         titleMesh.position.x = 8.5;
-        titleMesh.position.y = 9;
+        titleMesh.position.y = 3;
         titleMesh.position.z = -2;
         titleMesh.castShadow = true;
         scene.add(titleMesh);
@@ -123,7 +108,7 @@ export default class Portfolio {
       "TDWE",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
-      new THREE.Vector3(15, 6.5, 0),
+      new THREE.Vector3(12, 0.8, 0),
       textCol,
       platformCol
     );
@@ -133,7 +118,7 @@ export default class Portfolio {
       "TDWE",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
-      new THREE.Vector3(20, 8.2, 0),
+      new THREE.Vector3(18, 0.8, 0),
       textCol,
       platformCol
     );
@@ -143,7 +128,7 @@ export default class Portfolio {
       "TDWE",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
-      new THREE.Vector3(25, 6.5, 0),
+      new THREE.Vector3(24, 0.8, 0),
       textCol,
       platformCol
     );
@@ -175,7 +160,7 @@ export default class Portfolio {
 
   createLighting() {
     this.light = new THREE.PointLight(0xffba08, 4, 40);
-    this.light.position.set(25, 12, 10);
+    this.light.position.set(25, 5, 0);
     this.light.castShadow = true;
     this.mainScene.add(this.light);
   }

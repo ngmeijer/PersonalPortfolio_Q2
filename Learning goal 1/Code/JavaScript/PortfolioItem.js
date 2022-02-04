@@ -1,4 +1,4 @@
-import Cube from "./Cube.js";
+import Cube from "./CustomGeometry/Cube.js";
 
 export default class PortfolioItem extends THREE.Object3D {
   ID;
@@ -17,7 +17,7 @@ export default class PortfolioItem extends THREE.Object3D {
   textureLoader;
   textMesh;
   playerInstance;
-  playerOnPlatform;
+  playerInRange;
 
   verticalWallWidth;
   verticalWallHeight;
@@ -50,7 +50,7 @@ export default class PortfolioItem extends THREE.Object3D {
     this.imageOffset = new THREE.Vector3(0, 0, -0.5);
 
     this.createFrame();
-    if (this.shouldCreatePlatform) this.createPlatform();
+    //if (this.shouldCreatePlatform) this.createPlatform();
   }
 
   createFrame() {
@@ -163,11 +163,12 @@ export default class PortfolioItem extends THREE.Object3D {
     let playerDistance = this.playerInstance.currentPos.distanceTo(
       this.itemPosition
     );
-    if(playerDistance < 3 && this.playerInstance.currentPos.y >= this.itemPosition.y){
-      this.playerOnPlatform = true;
-    } else this.playerOnPlatform = false;
+    if(playerDistance < 2){
+      console.log("in range of item " + this.ID);
+      this.playerInRange = true;
+    } else this.playerInRange = false;
 
-    return this.playerOnPlatform;
+    return this.playerInRange;
   }
 
   addToScene(pScene, pPhysicsWorld) {
@@ -175,8 +176,8 @@ export default class PortfolioItem extends THREE.Object3D {
     pScene.add(this.meshRight);
     pScene.add(this.meshTop);
 
-    if (this.shouldCreatePlatform) pScene.add(this.platform.mesh);
-    if (this.shouldCreatePlatform) pPhysicsWorld.addBody(this.platform.body);
+    //if (this.shouldCreatePlatform) pScene.add(this.platform.mesh);
+    //if (this.shouldCreatePlatform) pPhysicsWorld.addBody(this.platform.body);
 
     pScene.add(this.image);
 

@@ -1,7 +1,7 @@
-import Cube from "../Cube.js";
+import Cube from "../CustomGeometry/Cube.js";
 import Text from "../Text.js";
 import AreaComponent from "./AreaComponent.js";
-import Door from "./Door.js";
+import Door from "../CustomGeometry/Door.js";
 
 export default class AboutMe extends AreaComponent {
   door;
@@ -17,7 +17,7 @@ export default class AboutMe extends AreaComponent {
   overrideColours() {}
 
   initializeArea() {
-    this.createDoor();
+    //this.createDoor();
     this.createLighting();
     this.creatAboutMeText();
     this.createAboutMeGeometry();
@@ -28,7 +28,7 @@ export default class AboutMe extends AreaComponent {
   update() {
     if (this.canUpdate == false) return;
 
-    this.checkPlayerDistance();
+    //this.checkPlayerDistance();
 
     for (let i = 0; i < this.moveableObjects.length; i++) {
       this.moveableObjects[i].update();
@@ -71,27 +71,15 @@ export default class AboutMe extends AreaComponent {
   }
 
   createAboutMeGeometry() {
-    let background = new Cube(
-      "AboutMe_Background",
-      new THREE.Vector3(26, 20, 10),
-      new THREE.Vector3(45, 1, -12),
+    let ground = new Cube(
+      "AboutMe_Ground",
+      new THREE.Vector3(50, 1, 30),
+      new THREE.Vector3(31, 5, -10),
       this.environmentColor,
       true,
       0
     );
-
-    background.addToScene(this.scene, this.physicsWorld);
-
-    let backgroundLeft = new Cube(
-      "AboutMe_BackgroundLeft",
-      new THREE.Vector3(1, 20, 10),
-      new THREE.Vector3(7.5, 1, -6.5),
-      this.environmentColor,
-      true,
-      0
-    );
-
-    backgroundLeft.addToScene(this.scene, this.physicsWorld);
+    ground.addToScene(this.scene, this.physicsWorld);
   }
 
   creatAboutMeText() {

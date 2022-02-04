@@ -1,4 +1,6 @@
-import Cube from "../Cube.js";
+import Cube from "../CustomGeometry/Cube.js";
+import Elevator from "../CustomGeometry/Elevator.js";
+import Plane from "../CustomGeometry/Plane.js";
 import Text from "../Text.js";
 
 export default class Home {
@@ -13,56 +15,48 @@ export default class Home {
   playerInstance;
   light;
 
+  elevator;
+
   constructor(pScene, pPhysicsWorld, pFontLoader) {
     this.scene = pScene;
     this.physicsWorld = pPhysicsWorld;
     this.fontLoader = pFontLoader;
   }
 
-  overrideColours(){
-    
-  }
+  overrideColours() {}
 
-  initializeArea(){
+  initializeArea() {
     this.createStartGeometry();
     this.createStartText();
     this.createLighting();
   }
 
-  update(){
-
+  update() {
+    this.elevator.checkPlayerDistance(this.playerInstance);
   }
 
   createStartGeometry() {
     let wall = new Cube(
       "LeftWall",
       new THREE.Vector3(2, 20, 50),
-      new THREE.Vector3(-8, 0, 0),
+      new THREE.Vector3(-8, -1, 0),
       this.environmentColor,
       true,
       0
     );
     wall.addToScene(this.scene, this.physicsWorld);
 
-    let stairStep1 = new Cube(
-      "StairStep1",
-      new THREE.Vector3(2, 1, 15),
-      new THREE.Vector3(5, 0, 0),
+    let ground = new Cube(
+      "PortfolioGround",
+      new THREE.Vector3(10, 0.5, 15),
+      new THREE.Vector3(-2, -1, 0),
       this.environmentColor,
-      true,
-      0
+      true
     );
-    stairStep1.addToScene(this.scene, this.physicsWorld);
+    ground.addToScene(this.scene, this.physicsWorld);
 
-    let stairStep2 = new Cube(
-      "StairStep2",
-      new THREE.Vector3(2, 2, 15),
-      new THREE.Vector3(7, 0.5, 0),
-      this.environmentColor,
-      true,
-      0
-    );
-    stairStep2.addToScene(this.scene, this.physicsWorld);
+    this.elevator = new Elevator(new THREE.Vector3(4.5, 0, -2), this.environmentColor);
+    this.elevator.addToScene(this.scene, this.physicsWorld);
   }
 
   createStartText() {
@@ -73,36 +67,23 @@ export default class Home {
       "../Fonts/El_Messiri_SemiBold_Regular.json",
 
       function (font) {
-        const titleGeo = new THREE.TextGeometry(
+        const titleText = new Text(
           "Home",
-          { font: font, size: 0.7, height: 0.01 }
+          font,
+          0.7,
+          textCol,
+          new THREE.Vector3(-7, 5, -6)
         );
-        const titleMesh = new THREE.Mesh(titleGeo, [
-          new THREE.MeshPhongMaterial({ color: textCol }),
-          new THREE.MeshPhongMaterial({ color: textCol }),
-        ]);
 
-        titleMesh.position.x = -7;
-        titleMesh.position.y = 7;
-        titleMesh.position.z = -6;
-        titleMesh.castShadow = true;
-        scene.add(titleMesh);
+        const hintText = new Text(
+          "Press A/D to move!\nPress space to jump",
+          font,
+          0.4,
+          textCol,
+          new THREE.Vector3(-7, 0.5, -6)
+        );
 
-        // const hintGeo = new THREE.TextGeometry(
-        //   "Press A/D to move!\nPress space to jump",
-        //   { font: font, size: 0.4, height: 0.01 }
-        // );
-        // const hintMesh = new THREE.Mesh(hintGeo, [
-        //   new THREE.MeshPhongMaterial({ color: textCol }),
-        //   new THREE.MeshPhongMaterial({ color: textCol }),
-        // ]);
-
-        // hintMesh.position.x = -7;
-        // hintMesh.position.y = 1;
-        // hintMesh.position.z = -6;
-        // hintMesh.castShadow = true;
-        const hintText = new Text("Press A/D to move!\nPress space to jump",font, 0.4, textCol, new THREE.Vector3(-7, 1, -6));
-
+        scene.add(titleText.mesh);
         scene.add(hintText.mesh);
       }
     );
@@ -110,7 +91,7 @@ export default class Home {
 
   createLighting() {
     this.light = new THREE.PointLight(0xffba08, 10, 20);
-    this.light.position.set(0, 7, 0);
+    this.light.position.set(0, 9, -2);
     this.light.castShadow = true;
     this.scene.add(this.light);
   }

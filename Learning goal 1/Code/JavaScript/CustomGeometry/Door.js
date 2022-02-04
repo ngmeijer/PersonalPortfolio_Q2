@@ -1,4 +1,4 @@
-import Cube from "../Cube.js";
+import Cube from "./Cube.js";
 
 export default class Door extends THREE.Object3D {
   ID;

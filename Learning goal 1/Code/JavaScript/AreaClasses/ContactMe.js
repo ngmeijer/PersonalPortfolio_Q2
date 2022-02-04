@@ -50,21 +50,6 @@ export default class ContactMe {
         titleMesh.position.z = -6;
         titleMesh.castShadow = true;
         scene.add(titleMesh);
-
-        const hintGeo = new THREE.TextGeometry(
-          "Press A/D to move!\nPress space to jump",
-          { font: font, size: 0.4, height: 0.01 }
-        );
-        const hintMesh = new THREE.Mesh(hintGeo, [
-          new THREE.MeshPhongMaterial({ color: textCol }),
-          new THREE.MeshPhongMaterial({ color: textCol }),
-        ]);
-
-        hintMesh.position.x = -7;
-        hintMesh.position.y = 1;
-        hintMesh.position.z = -6;
-        hintMesh.castShadow = true;
-        scene.add(hintMesh);
       }
     );
   }

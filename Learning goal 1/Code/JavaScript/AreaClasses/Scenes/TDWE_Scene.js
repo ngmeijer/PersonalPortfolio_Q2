@@ -1,5 +1,5 @@
-import Plane from "../../Plane.js";
-import Cube from "../../Cube.js";
+import Plane from "../../CustomGeometry/Plane.js";
+import Cube from "../../CustomGeometry/Cube.js";
 import Player from "../../Player.js";
 
 export default class TDWE_Scene extends THREE.Scene {

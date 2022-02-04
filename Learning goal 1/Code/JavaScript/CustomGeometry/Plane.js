@@ -59,4 +59,10 @@ export default class Plane extends THREE.Object3D {
     this.planeMesh.rotation.y = this.planeRotationRadians.y;
     this.planeMesh.rotation.z = this.planeRotationRadians.z;
   }
+
+  addToScene(pScene, pPhysicsWorld = null) {
+    pScene.add(this.planeMesh);
+    if (pPhysicsWorld == null) return;
+    pPhysicsWorld.addBody(this.body);
+  }
 }

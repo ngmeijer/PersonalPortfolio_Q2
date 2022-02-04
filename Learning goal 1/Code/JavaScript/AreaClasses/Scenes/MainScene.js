@@ -2,10 +2,6 @@ import Home from "../Home.js";
 import Portfolio from "../Portfolio.js";
 import AboutMe from "../AboutMe.js";
 import ContactMe from "../ContactMe.js";
-
-import Plane from "../../Plane.js";
-import Cube from "../../Cube.js";
-
 import Player from "../../Player.js";
 
 export default class MainScene extends THREE.Scene {
@@ -22,7 +18,7 @@ export default class MainScene extends THREE.Scene {
   textureLoader;
 
   playerInstance;
-  playerPosition = new THREE.Vector3(0, 8, 1);
+  playerPosition = new THREE.Vector3(0, 2, 1);
 
   instructionTextColor;
   platformColor;
@@ -38,7 +34,6 @@ export default class MainScene extends THREE.Scene {
     this.physicsWorld = new CANNON.World();
     this.physicsWorld.gravity.set(0, -12, 0);
     this.physicsWorld.solver.iterations = 20;
-    this.createGeneralGeometry();
 
     this.homeArea = new Home(this, this.physicsWorld, this.fontLoader);
     this.portfolioArea = new Portfolio(
@@ -117,35 +112,5 @@ export default class MainScene extends THREE.Scene {
         pPlayer.hasPlayedRightAnimation = false;
       }
     });
-  }
-
-  createGeneralGeometry() {
-    let ground = new Plane(
-      new THREE.Vector2(40, 50),
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(-90, 0, 0),
-      this.environmentColor,
-      true
-    );
-    this.add(ground.planeMesh);
-    this.physicsWorld.addBody(ground.planeBody);
-
-    let background = new Plane(
-      new THREE.Vector2(120, 25),
-      new THREE.Vector3(0, 0, -25),
-      new THREE.Vector3(0, 0, 0),
-      0x100b13,
-      false
-    );
-    this.add(background.planeMesh);
-
-    let higherGround = new Cube(
-      "PortfolioGround",
-      new THREE.Vector3(120, 3, 15),
-      new THREE.Vector3(68, 1, 0),
-      this.environmentColor,
-      true
-    );
-    higherGround.addToScene(this, this.physicsWorld);
   }
 }

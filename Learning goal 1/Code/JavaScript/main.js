@@ -14,6 +14,7 @@ let activeScene = mainScene;
 let activePhysicsWorld;
 
 let canEnterItem = false;
+let currentlyEntering = false;
 
 let environmentColor = 0x100b13,
   instructionTextColor = 0x9d0208,
@@ -21,8 +22,8 @@ let environmentColor = 0x100b13,
 
 document.addEventListener("keydown", function (event) {
   if (event.key == "f" || event.key == "F") {
-    console.log(canEnterItem);
-    if(!canEnterItem) return;
+    if(!canEnterItem || currentlyEntering) return;
+    currentlyEntering = true;
     activeScene.playerInstance.saveCurrentPosition();
     activeScene.playerInstance.moveIntoPortfolioItem();
     switchScene();
@@ -74,6 +75,7 @@ function switchScene() {
 
   fadeOut.chain(fadeIn);
   fadeOut.start();
+  currentlyEntering = false;
 }
 
 window.addEventListener("resize", onWindowResize, false);
