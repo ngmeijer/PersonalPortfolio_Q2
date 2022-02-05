@@ -32,7 +32,7 @@ export default class Home {
   }
 
   update() {
-    this.elevator.checkPlayerDistance(this.playerInstance);
+    this.elevator.update();
   }
 
   createStartGeometry() {
@@ -57,6 +57,7 @@ export default class Home {
 
     this.elevator = new Elevator(new THREE.Vector3(4.5, 0, -2), this.environmentColor);
     this.elevator.addToScene(this.scene, this.physicsWorld);
+    this.elevator.playerInstance = this.playerInstance;
   }
 
   createStartText() {
@@ -83,15 +84,24 @@ export default class Home {
           new THREE.Vector3(-7, 0.5, -6)
         );
 
+        const inputText = new Text(
+          "W to move up\nS to move down",
+          font,
+          0.2,
+          textCol,
+          new THREE.Vector3(2, 2, -1.5)
+        );
+
         scene.add(titleText.mesh);
         scene.add(hintText.mesh);
+        scene.add(inputText.mesh);
       }
     );
   }
 
   createLighting() {
     this.light = new THREE.PointLight(0xffba08, 10, 20);
-    this.light.position.set(0, 9, -2);
+    this.light.position.set(0, 9, 4);
     this.light.castShadow = true;
     this.scene.add(this.light);
   }

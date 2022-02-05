@@ -49,7 +49,7 @@ export default class Portfolio {
   createPortfolioGeometry() {
     let ground = new Cube(
       "Portfolio_Ground",
-      new THREE.Vector3(50, 1, 30),
+      new THREE.Vector3(50, 1, 50),
       new THREE.Vector3(31, -1.5, -10),
       this.environmentColor,
       true,
@@ -89,9 +89,9 @@ export default class Portfolio {
           new THREE.MeshPhongMaterial({ color: textCol }),
         ]);
 
-        titleMesh.position.x = 8.5;
+        titleMesh.position.x = 7;
         titleMesh.position.y = 3;
-        titleMesh.position.z = -2;
+        titleMesh.position.z = -1;
         titleMesh.castShadow = true;
         scene.add(titleMesh);
       }
@@ -159,8 +159,8 @@ export default class Portfolio {
   }
 
   createLighting() {
-    this.light = new THREE.PointLight(0xffba08, 4, 40);
-    this.light.position.set(25, 5, 0);
+    this.light = new THREE.PointLight(0xffba08, 4, 60);
+    this.light.position.set(15, 2, 0);
     this.light.castShadow = true;
     this.mainScene.add(this.light);
   }

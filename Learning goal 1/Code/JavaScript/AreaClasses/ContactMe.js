@@ -1,3 +1,5 @@
+import Cube from "../CustomGeometry/Cube.js";
+
 export default class ContactMe {
   scene;
   physicsWorld;
@@ -15,8 +17,8 @@ export default class ContactMe {
   overrideColours() {}
 
   initializeArea() {
-    this.createContactMeArea();
-    //this.createLighting();
+    this.createContactMeGeometry();
+    this.createLighting();
     this.createText();
   }
 
@@ -24,8 +26,28 @@ export default class ContactMe {
     
   }
 
-  createContactMeArea() {
+  createContactMeGeometry() {
+    let ground = new Cube(
+      "Portfolio_Ground",
+      new THREE.Vector3(50, 1, 30),
+      new THREE.Vector3(31, 11.5, -10),
+      this.environmentColor,
+      true,
+      0
+    );
 
+    ground.addToScene(this.scene, this.physicsWorld);
+
+    let backgroundLeft = new Cube(
+      "Portfolio_BackgroundLeft",
+      new THREE.Vector3(1, 20, 30),
+      new THREE.Vector3(6.5, -0.5, -16),
+      this.environmentColor,
+      true,
+      0
+    );
+
+    backgroundLeft.addToScene(this.scene, this.physicsWorld);
   }
 
   createText() {
@@ -45,8 +67,8 @@ export default class ContactMe {
           new THREE.MeshPhongMaterial({ color: textCol }),
         ]);
 
-        titleMesh.position.x = 55;
-        titleMesh.position.y = 7;
+        titleMesh.position.x = 7;
+        titleMesh.position.y = 16;
         titleMesh.position.z = -6;
         titleMesh.castShadow = true;
         scene.add(titleMesh);
@@ -56,7 +78,7 @@ export default class ContactMe {
 
   createLighting() {
     this.light = new THREE.PointLight(0xffba08, 10, 20);
-    this.light.position.set(75, 7, 0);
+    this.light.position.set(15, 20, 0);
     this.light.castShadow = true;
     this.scene.add(this.light);
   }

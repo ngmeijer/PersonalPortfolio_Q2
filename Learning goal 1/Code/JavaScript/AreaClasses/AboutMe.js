@@ -73,7 +73,7 @@ export default class AboutMe extends AreaComponent {
   createAboutMeGeometry() {
     let ground = new Cube(
       "AboutMe_Ground",
-      new THREE.Vector3(50, 1, 30),
+      new THREE.Vector3(50, 1, 50),
       new THREE.Vector3(31, 5, -10),
       this.environmentColor,
       true,
@@ -100,8 +100,8 @@ export default class AboutMe extends AreaComponent {
           new THREE.MeshPhongMaterial({ color: textCol }),
         ]);
 
-        titleMesh.position.x = 37;
-        titleMesh.position.y = 12;
+        titleMesh.position.x = 7.5;
+        titleMesh.position.y = 11;
         titleMesh.position.z = -6.5;
         titleMesh.castShadow = true;
         scene.add(titleMesh);
@@ -112,19 +112,14 @@ export default class AboutMe extends AreaComponent {
           "\nsed do eiusmod tempor incididunt" +
           "\nut labore et dolore magna aliqua. " +
           "\nUt enim ad minim veniam, quis nostrud" +
-          "\nexercitation ullamco laboris nisi ut aliquip" +
-          "\nex ea commodo consequat. Duis aute irure dolor in" +
-          "\nreprehenderit in voluptate velit esse cillum dolore" +
-          "\neu fugiat nulla pariatur. Excepteur sint" +
-          "\noccaecat cupidatat non proident, sunt in culpa qui" +
-          "\nofficia deserunt mollit anim id est laborum";
+          "\nexercitation ullamco laboris nisi ut aliquip";
 
         const informationText = new Text(
           textContent,
           font,
           0.3,
           textCol,
-          new THREE.Vector3(37.5, 11, -6)
+          new THREE.Vector3(8, 10, -6)
         );
         scene.add(informationText.mesh);
       }
@@ -133,7 +128,7 @@ export default class AboutMe extends AreaComponent {
 
   createLighting() {
     this.light = new THREE.PointLight(0xffba08, 5, 30);
-    this.light.position.set(50, 7, 0);
+    this.light.position.set(15, 7, 0);
     this.light.castShadow = true;
     this.scene.add(this.light);
   }

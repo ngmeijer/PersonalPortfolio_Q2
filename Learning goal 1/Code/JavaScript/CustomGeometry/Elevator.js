@@ -4,6 +4,10 @@ export default class Elevator extends THREE.Object3D {
   platformBody;
   colour;
   playerInstance;
+  moveFloorUp;
+  moveFloorDown;
+  currentFloor = 0;
+  maxFloors = 3;
 
   constructor(pPosition, pColour) {
     super();
@@ -12,10 +16,11 @@ export default class Elevator extends THREE.Object3D {
 
     this.createSpine();
     this.createPlatform();
+    this.checkInput(this);
   }
 
   createSpine() {
-    const geo = new THREE.BoxGeometry(0.5, 25, 2);
+    const geo = new THREE.BoxGeometry(0.5, 45, 2);
     const material = new THREE.MeshPhongMaterial({ color: this.colour });
     this.spineMesh = new THREE.Mesh(geo, material);
     this.spineMesh.position.x = this.pos.x;
@@ -42,11 +47,89 @@ export default class Elevator extends THREE.Object3D {
     this.platformBody.position.z = this.platformMesh.position.z;
   }
 
-  checkPlayerDistance(pPlayer) {
-    let distance = pPlayer.currentPos.distanceTo(
+  update() {
+    this.checkPlayerDistance();
+    this.updateTransform();
+  }
+
+  updateTransform() {
+    this.platformMesh.position.set(
+      this.platformBody.position.x,
+      this.platformBody.position.y,
+      this.platformBody.position.z
+    );
+    this.platformMesh.quaternion.set(
+      this.platformBody.quaternion.x,
+      this.platformBody.quaternion.y,
+      this.platformBody.quaternion.z,
+      this.platformBody.quaternion.w
+    );
+  }
+
+  checkInput(pThis) {
+    document.addEventListener("keydown", function (event) {
+      if (event.key == "w" || event.key == "W") {
+        pThis.checkDirection(1);
+      }
+      if (event.key == "s" || event.key == "S") {
+        pThis.checkDirection(-1);
+      }
+    });
+  }
+
+  checkDirection(pDirection) {
+    switch (pDirection) {
+      case 1:
+        this.moveFloorUp = true;
+        this.moveFloorDown = false;
+        break;
+      case -1:
+        this.moveFloorDown = true;
+        this.moveFloorUp = false;
+        break;
+    }
+  }
+
+  checkPlayerDistance() {
+    let distance = this.playerInstance.currentPos.distanceTo(
       this.platformMesh.position
     );
-    console.log(distance);
+
+    if (distance <= 1.5) {
+      if (this.moveFloorUp && this.currentFloor < this.maxFloors) {
+        let targetPos = new THREE.Vector3(
+          this.platformBody.position.x,
+          this.platformBody.position.y + 6.5,
+          this.platformBody.position.z
+        );
+
+        const tweenToFloorUp = new TWEEN.Tween(this.platformBody.position)
+          .to({ x: targetPos.x, y: targetPos.y, z: targetPos.z }, 3000)
+          .easing(TWEEN.Easing.Linear.None
+            )
+          .start();
+        this.currentFloor++;
+        this.moveFloorUp = false;
+        this.moveFloorDown = false;
+      }
+
+      if (this.moveFloorDown && this.currentFloor > 0) {
+        let targetPos = new THREE.Vector3(
+          this.platformBody.position.x,
+          this.platformBody.position.y - 6.5,
+          this.platformBody.position.z
+        );
+
+        const tweenToFloorDown = new TWEEN.Tween(this.platformBody.position)
+          .to({ x: targetPos.x, y: targetPos.y, z: targetPos.z }, 3000)
+          .easing(TWEEN.Easing.Linear.None
+            )
+          .start();
+        this.currentFloor--;
+        this.moveFloorUp = false;
+        this.moveFloorDown = false;
+      }
+    }
   }
 
   addToScene(pScene, pPhysicsWorld) {
