@@ -12,6 +12,7 @@ export default class TDWE_Scene extends THREE.Scene {
   websiteComponents = [];
   physicsWorld;
 
+  eventManager;
   fontLoader;
   textureLoader;
 
@@ -45,7 +46,7 @@ export default class TDWE_Scene extends THREE.Scene {
   }
 
   createPlayer() {
-    this.playerInstance = new Player(4, 7, this.playerPosition);
+    this.playerInstance = new Player(8, 7, this.playerPosition);
     this.physicsWorld.addBody(this.playerInstance.playerBody);
     this.add(this.playerInstance.group);
 

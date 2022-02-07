@@ -8,15 +8,18 @@ export default class Elevator extends THREE.Object3D {
   moveFloorDown;
   currentFloor = 0;
   maxFloors = 3;
+  eventManager;
+  animationPlaying = false;
 
-  constructor(pPosition, pColour) {
+  constructor(pPosition, pColour, pEventManager) {
     super();
     this.pos = pPosition;
     this.colour = pColour;
+    this.eventManager = pEventManager;
 
     this.createSpine();
     this.createPlatform();
-    this.checkInput(this);
+    this.initializeInputEvents(this, this.eventManager);
   }
 
   createSpine() {
@@ -66,9 +69,11 @@ export default class Elevator extends THREE.Object3D {
     );
   }
 
-  checkInput(pThis) {
+  initializeInputEvents(pThis, pEventManager) {
     document.addEventListener("keydown", function (event) {
       if (event.key == "w" || event.key == "W") {
+        pEventManager.dispatchEvent({ type: "Event_disableMove" });
+        console.log("prssed w")
         pThis.checkDirection(1);
       }
       if (event.key == "s" || event.key == "S") {
@@ -95,41 +100,50 @@ export default class Elevator extends THREE.Object3D {
       this.platformMesh.position
     );
 
+    if (this.animationPlaying) return;
     if (distance <= 1.5) {
       if (this.moveFloorUp && this.currentFloor < this.maxFloors) {
-        let targetPos = new THREE.Vector3(
-          this.platformBody.position.x,
-          this.platformBody.position.y + 6.5,
-          this.platformBody.position.z
-        );
+        this.startAscendingAnimation(this.eventManager);
 
-        const tweenToFloorUp = new TWEEN.Tween(this.platformBody.position)
-          .to({ x: targetPos.x, y: targetPos.y, z: targetPos.z }, 3000)
-          .easing(TWEEN.Easing.Linear.None
-            )
-          .start();
-        this.currentFloor++;
-        this.moveFloorUp = false;
-        this.moveFloorDown = false;
-      }
+        if (this.moveFloorDown && this.currentFloor > 0) {
+          let targetPos = new THREE.Vector3(
+            this.platformBody.position.x,
+            this.platformBody.position.y - 6.5,
+            this.platformBody.position.z
+          );
 
-      if (this.moveFloorDown && this.currentFloor > 0) {
-        let targetPos = new THREE.Vector3(
-          this.platformBody.position.x,
-          this.platformBody.position.y - 6.5,
-          this.platformBody.position.z
-        );
-
-        const tweenToFloorDown = new TWEEN.Tween(this.platformBody.position)
-          .to({ x: targetPos.x, y: targetPos.y, z: targetPos.z }, 3000)
-          .easing(TWEEN.Easing.Linear.None
-            )
-          .start();
-        this.currentFloor--;
-        this.moveFloorUp = false;
-        this.moveFloorDown = false;
+          const tweenToFloorDown = new TWEEN.Tween(this.platformBody.position)
+            .to({ x: targetPos.x, y: targetPos.y, z: targetPos.z }, 3000)
+            .easing(TWEEN.Easing.Linear.None)
+            .start();
+          this.currentFloor--;
+          this.moveFloorUp = false;
+          this.moveFloorDown = false;
+        }
       }
     }
+  }
+
+  startAscendingAnimation(pEventManager) {
+    let targetPos = new THREE.Vector3(
+      this.platformBody.position.x,
+      this.platformBody.position.y + 6.5,
+      this.platformBody.position.z
+    );
+
+    this.animationPlaying = true;
+
+    const tweenToFloorUp = new TWEEN.Tween(this.platformBody.position)
+      .to({ x: targetPos.x, y: targetPos.y, z: targetPos.z }, 3000)
+      .easing(TWEEN.Easing.Linear.None)
+      .start()
+      .onComplete(function () {
+        pEventManager.dispatchEvent({ type: "Event_enableMove" });
+        this.animationPlaying = false;
+      });
+      this.currentFloor++;
+      this.moveFloorUp = false;
+      this.moveFloorDown = false;
   }
 
   addToScene(pScene, pPhysicsWorld) {

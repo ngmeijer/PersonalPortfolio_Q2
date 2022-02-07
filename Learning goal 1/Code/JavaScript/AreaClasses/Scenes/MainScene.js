@@ -14,6 +14,7 @@ export default class MainScene extends THREE.Scene {
   websiteComponents = [];
   physicsWorld;
 
+  eventManager;
   fontLoader;
   textureLoader;
 
@@ -35,7 +36,13 @@ export default class MainScene extends THREE.Scene {
     this.physicsWorld.gravity.set(0, -12, 0);
     this.physicsWorld.solver.iterations = 20;
 
-    this.homeArea = new Home(this, this.physicsWorld, this.fontLoader);
+    this.homeArea = new Home(
+      this,
+      this.physicsWorld,
+      this.fontLoader,
+      this.eventManager
+    );
+    this.homeArea.eventManager = this.eventManager;
     this.portfolioArea = new Portfolio(
       this,
       this.physicsWorld,
@@ -85,7 +92,17 @@ export default class MainScene extends THREE.Scene {
   createPlayer() {
     this.playerInstance = new Player(4, 7, this.playerPosition);
     this.physicsWorld.addBody(this.playerInstance.playerBody);
+
     this.add(this.playerInstance.group);
+
+    let tempPlayer = this.playerInstance;
+
+    this.eventManager.addEventListener("Event_disableMove", function () {
+      tempPlayer.canMove = false;
+    });
+    this.eventManager.addEventListener("Event_enableMove", function () {
+      tempPlayer.canMove = true;
+    });
 
     this.createMovementInput(this.playerInstance);
   }

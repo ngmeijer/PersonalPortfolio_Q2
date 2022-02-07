@@ -13,6 +13,7 @@ export default class Player extends THREE.Object3D {
   movingRight = false;
   velocity;
   canMove = true;
+
   delta;
   light;
 
@@ -36,7 +37,6 @@ export default class Player extends THREE.Object3D {
   savedPosition;
   facingLeft;
   facingRight = true;
-  canMove = true;
   group;
 
   constructor(pMoveSpeed, pJumpForce, pPosition) {
@@ -47,9 +47,10 @@ export default class Player extends THREE.Object3D {
     this.savedPosition = pPosition;
     this.jumpForce = pJumpForce;
 
+    this.canMove = true;
     this.initializeGFX();
     this.initializeBody();
-    
+
     this.velocity = this.playerBody.velocity;
     this.startRot = this.group.rotation;
 
@@ -146,7 +147,7 @@ export default class Player extends THREE.Object3D {
       )
       .easing(TWEEN.Easing.Quadratic.InOut);
 
-      this.tweenMoveOutZ = new TWEEN.Tween(this.playerBody.position)
+    this.tweenMoveOutZ = new TWEEN.Tween(this.playerBody.position)
       .to(
         {
           x: this.savedPosition.x,
@@ -157,7 +158,7 @@ export default class Player extends THREE.Object3D {
       )
       .easing(TWEEN.Easing.Quadratic.InOut);
 
-      this.tweenRotateCounter90 = new TWEEN.Tween(this.group.rotation)
+    this.tweenRotateCounter90 = new TWEEN.Tween(this.group.rotation)
       .to(
         {
           x: this.group.rotation.x,
@@ -205,8 +206,8 @@ export default class Player extends THREE.Object3D {
       this.isJumping = true;
     } else this.isJumping = false;
   }
-  
-  saveCurrentPosition(){
+
+  saveCurrentPosition() {
     this.savedPosition = this.playerBody.position;
   }
 

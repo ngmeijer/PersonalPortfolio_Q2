@@ -1,10 +1,13 @@
 import MainScene from "./AreaClasses/Scenes/MainScene.js";
 import TDWE_Scene from "./AreaClasses/Scenes/TDWE_Scene.js";
 
+const eventManager = new THREE.EventDispatcher();
 const fontLoader = new THREE.FontLoader();
 const textureLoader = new THREE.TextureLoader();
 const mainScene = new MainScene(fontLoader, textureLoader);
 const testScene = new TDWE_Scene(fontLoader, textureLoader);
+mainScene.eventManager = eventManager;
+testScene.eventManager = eventManager;
 
 let camera, renderer;
 
@@ -22,7 +25,7 @@ let environmentColor = 0x100b13,
 
 document.addEventListener("keydown", function (event) {
   if (event.key == "f" || event.key == "F") {
-    if(!canEnterItem || currentlyEntering) return;
+    if (!canEnterItem || currentlyEntering) return;
     currentlyEntering = true;
     activeScene.playerInstance.saveCurrentPosition();
     activeScene.playerInstance.moveIntoPortfolioItem();
@@ -43,7 +46,7 @@ function createRenderingComponents() {
   renderer = new THREE.WebGLRenderer({
     powerPreference: "high-performance",
     logarithmicDepthBuffer: true,
-    antialias: true
+    antialias: true,
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true;

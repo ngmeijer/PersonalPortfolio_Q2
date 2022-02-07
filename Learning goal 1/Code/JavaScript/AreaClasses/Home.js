@@ -7,6 +7,7 @@ export default class Home {
   scene;
   physicsWorld;
   fontLoader;
+  eventManager;
 
   instructionTextColor = 0xe85d04;
   platformColor = 0x370617;
@@ -17,10 +18,11 @@ export default class Home {
 
   elevator;
 
-  constructor(pScene, pPhysicsWorld, pFontLoader) {
+  constructor(pScene, pPhysicsWorld, pFontLoader, pEventManager) {
     this.scene = pScene;
     this.physicsWorld = pPhysicsWorld;
     this.fontLoader = pFontLoader;
+    this.eventManager = pEventManager;
   }
 
   overrideColours() {}
@@ -55,7 +57,7 @@ export default class Home {
     );
     ground.addToScene(this.scene, this.physicsWorld);
 
-    this.elevator = new Elevator(new THREE.Vector3(4.5, 0, -2), this.environmentColor);
+    this.elevator = new Elevator(new THREE.Vector3(4.5, 0, -2), this.environmentColor, this.eventManager);
     this.elevator.addToScene(this.scene, this.physicsWorld);
     this.elevator.playerInstance = this.playerInstance;
   }
