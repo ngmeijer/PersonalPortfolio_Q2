@@ -35,9 +35,11 @@ export default class Player extends THREE.Object3D {
   movingInRotation = 1.5708;
 
   savedPosition;
+  positionLocked = false;
   facingLeft;
   facingRight = true;
   group;
+  elevator;
 
   constructor(pMoveSpeed, pJumpForce, pPosition) {
     super();
@@ -79,9 +81,9 @@ export default class Player extends THREE.Object3D {
     this.playerBody.position.y = this.startPos.y;
     this.playerBody.position.z = this.startPos.z;
 
-    //this.tweenFaceCamera.chain(this.tweenMoveOutZ);
-    //this.tweenMoveOutZ.chain(this.tweenRotateCounter90);
-    //this.tweenFaceCamera.start();
+    this.tweenFaceCamera.chain(this.tweenMoveOutZ);
+    this.tweenMoveOutZ.chain(this.tweenRotateCounter90);
+    this.tweenFaceCamera.start();
 
     this.canMove = true;
   }
@@ -142,17 +144,6 @@ export default class Player extends THREE.Object3D {
           x: this.playerBody.position.x,
           y: this.playerBody.position.y,
           z: this.playerBody.position.z - 2,
-        },
-        1000
-      )
-      .easing(TWEEN.Easing.Quadratic.InOut);
-
-    this.tweenMoveOutZ = new TWEEN.Tween(this.playerBody.position)
-      .to(
-        {
-          x: this.savedPosition.x,
-          y: this.savedPosition.y,
-          z: this.savedPosition.z,
         },
         1000
       )

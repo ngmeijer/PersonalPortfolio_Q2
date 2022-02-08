@@ -113,9 +113,9 @@ export default class Portfolio {
       platformCol
     );
 
-    const TWDE_Item2 = new PortfolioItem(
-      "TDWE_Portfolio2",
-      "TDWE",
+    const NetherFights_Item = new PortfolioItem(
+      "NetherFights_Portfolio",
+      "NetherFights",
       new THREE.Vector2(4, 2.36),
       new THREE.Vector3(3.9, 2.2),
       new THREE.Vector3(18, 0.8, 0),
@@ -133,24 +133,15 @@ export default class Portfolio {
       platformCol
     );
 
-    this.fontLoader.load(
-      "../Fonts/Josefin_Sans_SemiBold_Regular.json",
-
-      function (font) {
-        TWDE_Item.createText(font);
-        TWDE_Item2.createText(font);
-      }
-    );
-
     TWDE_Item.createImage(textureLoader);
     TWDE_Item.addToScene(this.mainScene, this.physicsWorld);
     TWDE_Item.playerInstance = this.playerInstance;
     this.portfolioItems.push(TWDE_Item);
 
-    TWDE_Item2.createImage(textureLoader);
-    TWDE_Item2.addToScene(this.mainScene, this.physicsWorld);
-    TWDE_Item2.playerInstance = this.playerInstance;
-    this.portfolioItems.push(TWDE_Item2);
+    NetherFights_Item.createImage(textureLoader);
+    NetherFights_Item.addToScene(this.mainScene, this.physicsWorld);
+    NetherFights_Item.playerInstance = this.playerInstance;
+    this.portfolioItems.push(NetherFights_Item);
 
     TWDE_Item3.createImage(textureLoader);
     TWDE_Item3.addToScene(this.mainScene, this.physicsWorld);

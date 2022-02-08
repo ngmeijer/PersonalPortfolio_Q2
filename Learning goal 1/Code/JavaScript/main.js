@@ -1,9 +1,14 @@
 import MainScene from "./AreaClasses/Scenes/MainScene.js";
 import TDWE_Scene from "./AreaClasses/Scenes/TDWE_Scene.js";
 
+let loadedTextures = false;
+let loadedFonts = false;
+
+THREE.Cache.enabled = true;
 const eventManager = new THREE.EventDispatcher();
 const fontLoader = new THREE.FontLoader();
 const textureLoader = new THREE.TextureLoader();
+
 const mainScene = new MainScene(fontLoader, textureLoader);
 const testScene = new TDWE_Scene(fontLoader, textureLoader);
 mainScene.eventManager = eventManager;
@@ -81,7 +86,6 @@ function switchScene() {
   currentlyEntering = false;
 }
 
-window.addEventListener("resize", onWindowResize, false);
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -97,7 +101,31 @@ function cameraFollowPlayer() {
     activeScene.playerInstance.playerBody.position.y + cameraOffset.y;
 }
 
-function initialize() {
+async function loadResources(){
+  textureLoader.load(
+    "../Images/NetherFights.png",
+  
+    function onLoad (image) {
+      THREE.Cache.add("NetherFights_Image", image);
+      loadedTextures = true;
+    }
+  );
+  
+  fontLoader.load(
+    "../Fonts/El_Messiri_SemiBold_Regular.json",
+  
+    function (font) {
+      THREE.Cache.add("customFont", font);
+      loadedFonts = true;
+    }
+  );
+}
+
+loadResources();
+async function initialize() {
+  await loadResources();
+
+  window.addEventListener("resize", onWindowResize, false);
   createRenderingComponents();
   mainScene.environmentColor = environmentColor;
   mainScene.instructionTextColor = instructionTextColor;
@@ -108,10 +136,13 @@ function initialize() {
   testScene.instructionTextColor = instructionTextColor;
   testScene.platformColor = platformColor;
   testScene.initalizeScene();
-
+  
   activeScene = mainScene;
   activePhysicsWorld = mainScene.physicsWorld;
+
+  animate();
 }
+initialize();
 
 const frameClock = new THREE.Clock();
 let delta;
@@ -132,5 +163,3 @@ function animate() {
 function render() {
   renderer.render(activeScene, camera);
 }
-initialize();
-animate();

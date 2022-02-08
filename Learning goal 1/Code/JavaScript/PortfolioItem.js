@@ -27,6 +27,8 @@ export default class PortfolioItem extends THREE.Object3D {
 
   shouldCreatePlatform;
 
+  customFont;
+
   constructor(
     pID,
     pImageFileName,
@@ -50,7 +52,6 @@ export default class PortfolioItem extends THREE.Object3D {
     this.imageOffset = new THREE.Vector3(0, 0, -0.5);
 
     this.createFrame();
-    //if (this.shouldCreatePlatform) this.createPlatform();
   }
 
   createFrame() {
@@ -115,9 +116,12 @@ export default class PortfolioItem extends THREE.Object3D {
       this.innerSize.x,
       this.innerSize.y
     );
+
+    let image = THREE.Cache.get("NetherFights_Image");
     const material = new THREE.MeshBasicMaterial({
-      map: textureLoader.load(`../Images/` + this.imageFileName + ".png"),
+      map: image,
     });
+
 
     this.image = new THREE.Mesh(geo, material);
 
@@ -145,7 +149,7 @@ export default class PortfolioItem extends THREE.Object3D {
 
   createText(pFont) {
     const geometry = new THREE.TextGeometry("Press F", {
-      font: pFont,
+      font: this.customFont,
       size: 0.4,
       height: 0.01,
     });
@@ -175,9 +179,6 @@ export default class PortfolioItem extends THREE.Object3D {
     pScene.add(this.meshLeft);
     pScene.add(this.meshRight);
     pScene.add(this.meshTop);
-
-    //if (this.shouldCreatePlatform) pScene.add(this.platform.mesh);
-    //if (this.shouldCreatePlatform) pPhysicsWorld.addBody(this.platform.body);
 
     pScene.add(this.image);
 

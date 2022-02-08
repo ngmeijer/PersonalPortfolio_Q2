@@ -25,10 +25,18 @@ export default class MainScene extends THREE.Scene {
   platformColor;
   environmentColor;
 
+  elevatorActive = false;
+
+  boundLockPlayer;
+  boundUnlockPlayer;
+
   constructor(pFontLoader, pTextureLoader) {
     super();
     this.fontLoader = pFontLoader;
     this.textureLoader = pTextureLoader;
+
+    this.boundLockPlayer = this.lockPlayerPosition.bind(this);
+    this.boundUnlockPlayer = this.unlockPlayerPosition.bind(this);
   }
 
   initalizeScene() {
@@ -86,7 +94,26 @@ export default class MainScene extends THREE.Scene {
       this.websiteComponents[i].update();
     }
 
+    if (this.elevatorActive) {
+      let elevatorPos = this.homeArea.elevator.platformBody.position;
+      let targetPos = new THREE.Vector3(
+        this.playerInstance.playerBody.position.x,
+        elevatorPos.y + 1,
+        elevatorPos.z
+      );
+      this.playerInstance.playerBody.position.set(targetPos.x, targetPos.y, targetPos.z);
+    }
     this.playerInstance.update(delta);
+  }
+
+  lockPlayerPosition() {
+    this.elevatorActive = true;
+    this.playerInstance.canMove = false;
+  }
+
+  unlockPlayerPosition(){
+    this.elevatorActive = false;
+    this.playerInstance.canMove = true;
   }
 
   createPlayer() {
@@ -95,14 +122,11 @@ export default class MainScene extends THREE.Scene {
 
     this.add(this.playerInstance.group);
 
-    let tempPlayer = this.playerInstance;
-
-    this.eventManager.addEventListener("Event_disableMove", function () {
-      tempPlayer.canMove = false;
-    });
-    this.eventManager.addEventListener("Event_enableMove", function () {
-      tempPlayer.canMove = true;
-    });
+    this.eventManager.addEventListener(
+      "Event_disableMove",
+      this.boundLockPlayer
+    );
+    this.eventManager.addEventListener("Event_enableMove", this.boundUnlockPlayer);
 
     this.createMovementInput(this.playerInstance);
   }

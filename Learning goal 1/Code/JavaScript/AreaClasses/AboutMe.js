@@ -1,5 +1,5 @@
 import Cube from "../CustomGeometry/Cube.js";
-import Text from "../Text.js";
+import Text from "../CustomGeometry/Text.js";
 import AreaComponent from "./AreaComponent.js";
 import Door from "../CustomGeometry/Door.js";
 

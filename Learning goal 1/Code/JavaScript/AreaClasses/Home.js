@@ -1,7 +1,6 @@
 import Cube from "../CustomGeometry/Cube.js";
 import Elevator from "../CustomGeometry/Elevator.js";
-import Plane from "../CustomGeometry/Plane.js";
-import Text from "../Text.js";
+import Text from "../CustomGeometry/Text.js";
 
 export default class Home {
   scene;
@@ -57,7 +56,12 @@ export default class Home {
     );
     ground.addToScene(this.scene, this.physicsWorld);
 
-    this.elevator = new Elevator(new THREE.Vector3(4.5, 0, -2), this.environmentColor, this.eventManager);
+    this.elevator = new Elevator(
+      new THREE.Vector3(4.5, 0, -2),
+      this.environmentColor,
+      this.eventManager,
+    );
+    this.elevator.createText(this.fontLoader, this.scene);
     this.elevator.addToScene(this.scene, this.physicsWorld);
     this.elevator.playerInstance = this.playerInstance;
   }
@@ -86,17 +90,8 @@ export default class Home {
           new THREE.Vector3(-7, 0.5, -6)
         );
 
-        const inputText = new Text(
-          "W to move up\nS to move down",
-          font,
-          0.2,
-          textCol,
-          new THREE.Vector3(2, 2, -1.5)
-        );
-
         scene.add(titleText.mesh);
         scene.add(hintText.mesh);
-        scene.add(inputText.mesh);
       }
     );
   }
